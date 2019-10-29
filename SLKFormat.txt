@@ -1,0 +1,182 @@
+The SYLK File Format
+SYLK format is an ASCII text file designed to completely represent a template in a format external to the native file format of any given product.  It has a strong orientation towards MultiPlan in that the formatting commands, formula representations and row-and-column references used are MultiPlan-derived.  It is, however, a program-independent interchange format, much like DIF or SDI.  Because Microsoft may extend SYLK further, programs using the format should be
+written to ignore records and fields they aren't prepared to handle.
+
+SYLK Overview
+
+SYLK files are divided into records by carriage return/linefeed characters. Empty records are ignored. Non-empty records take the format
+
+< RTD > < FTD > < Fields >
+
+where
+
+< RTD > is a record type descriptor
+< FTD > is an optional field type descriptor
+< Fields > is an optional and variable number of data items
+
+The interpretation of the FTD depends on which RTD is used; the interpretation of the Fields often depends on which FTD is used. FTDs within a particular RTD may or may not be mutually exclusive, depending on use.
+
+An RTD may be up to two letters long. By convention, all RTDs are capitalized. The FTD takes the form of a semicolon followed by a single letter: ;< letter >. The FTDs ;U, ;V, ;W, ;X, ;Y and ;Z are the same for all records. Others vary. Fields may not contain carriage return or linefeed characters. Any field containing the reserved semicolon
+character must have two of them, as is the practice in some programming languages.
+
+In entries labeled as (diff), the last prior field values will be substituted if the field value of the current entry is empty. For example, if formatting commands are given for
+different cells in a given row, only the column number needs to be supplied. The row number will be assumed to be the last prior given field value.
+
+The FTDs ;X and ;Y determine the column and row coordinates, respectively. The spreadsheet origin is 1,1.
+
+SYLK Record Type Descriptors (RTD)
+In the descriptions that follow, items enclosed in angle brackets ( < > ) signify fields; the character [S] signifies an ASCII space character (20h).
+
+RTD ID       First record in SYLK file
+             FTD ;P < name >
+             < name > is the name of the program that produced the file.
+
+RTD F        Formatting of entire template or cell
+             There are seven possi ble FTDs to consider:
+             (1) ;X ;Y
+             (diff) cell coordinates
+             (2) ;F < cl > [S] < n > [S] < c2 >
+             (diff) cell formatting properties
+                      < cl > is one of the following 1-character format-
+                      ting codes:
+                       D default
+                       C continuous cross-cell display
+                       E scientific exponentiation
+                       F fixed decimal point
+                       G general format
+                       $ leading$and2decimal points
+                       * bar graph, one asterisk per unit
+                         (5 would be *****)
+                       < n > is the number of digits.
+                       <c2 > is one of the following 1-character align-
+                      ment codes:
+                        D default
+                        C center
+                        G general(textleft, numbersright) 
+                        L leftjustify
+                        R right justify
+             (3) ;R ;c
+             iF properties applied to an entire row or column
+             (4) ;D < cl > [S] < n > [S] < c2 > [S] < n3 >
+             default format defined as in ;F. ;D codes cannot be used.
+                       < n3 > is the default column width
+
+             (5);K
+             if present, commas are set
+             (S);E
+             if present, the formula format option is set
+
+            (7);W< n1 > [S] < n2 > [S] < n3 >
+            defines the widths of a group of columns:
+                       < n1 > is the first column
+                       < n2 > is the last column
+                       < n3 > is the width of columns in number of char-
+                            acters
+
+RTD B       Defines the boundaries of the rows and columns. Appears
+            near the beginning of a SYLK file.
+            FTD       ;Y ;X
+                     row and column numbers
+
+RTD C       Supplies the numerical or text value of a cell, the formula it
+            contains, whether it is protected, and other properties.
+            There are eight possi ble FTDs to consider:
+
+            FTD        (1) ;X ;Y
+                       (diff) cell coordinates
+                       (2);K
+                       Value of the cell, either numerical or textual, follows.
+                       Text values must be in double quotes. Logical
+                       values "TRUE" and "FALSE" must also be quoted.
+                       An ERROR value is preceded by #.
+                       (3);P
+                       if present, cell is locked (protected)
+                       (4) ;E < expr >
+                       MultiPlan formula (expression) follows
+                       (5) ;R ;C
+                       (diff) see ;S, below
+                       (6);S
+                       expression for this cell is given by another
+                       coordinate, where X = C and Y = R. The field
+                       contents are decimal coordinates. ;E cannot appear
+                       in the same set of FTDs with ;S. The cell at ;R ;C
+                       must be marked with either a ;D or a ;G.
+                       (7);D
+                       ;E expression is shared with another cell
+                       (8);G
+                       ;K value is shared with another cell. ;E does not
+                       appear.
+
+RTD NN      Defines a MultiPlan name as a union of rectangular
+            spreadsheet areas, expressed as absolh(te references.
+            There are two possible FTDs to consider:
+
+            FTD       (1) ;N < name >
+                      name of the area
+                      (2) ;E < expr >
+                      expression describing the area
+
+RTD NE      Defines a link to another (inactive) spreadsheet
+            There are three possible FTDs to consider:
+
+            FTD       (1) ;F < name >
+                      filename of the source sheet
+                      (2);S
+                      description of the source area (name of the cell
+                      group)
+                      (3);E
+                      expression describing the area
+
+RTD NV      External filename substitution
+            There are two possible FTDs to consider:
+
+            FTD       (1);L
+                      filename
+
+                      (2);F
+                      filename to be used instead
+
+RTD W       MultiPlan window structure
+            Before trying to set up a window structure from scratch, Microsoft
+            recommends dumping an available window structure to see how it is
+            organized.
+
+            FTD       (1) ;N
+                      window number
+
+                      (2) ;A y x
+                      coordinates of current cell as shown in upper left
+                      corner of window cited in ;N
+
+                      (3) ;B
+                      bordered flag
+
+ 
+                     (4) ;ST cy cx
+                     split window with title. cx is cursor position in new
+                     window. cy is number of screen lines in new
+                     window.
+
+                     (5) ;SH 1cy
+                     split window horizontal. cx is cursor position in new
+                     window. cy is number of screen lines in new
+                     window. 1 = L if windows are linked or scrolling.
+
+                     (6) ;SV 1cx
+                     split window vertical. cx is cursor position in new
+                     window. cy is number of screen lines in new
+                     window. 1 = L if windows are linked or scrolling.
+
+RTD E       End of SYLK file.
+
+Organization of a SYLK File
+
+ 1.  ID must be the first record.
+ 2.  The B RTD should be used for MultiPlan input, although it is not required.
+ 3.  For MultiPlan ;C records: ;D or ;G must appear before another C record that refers to it (with ;S, ;R, ;C)
+ 4.  Name definition should precede name use for efficiency, although not required.
+ 5.  Window splits and window properties must be in strict logical order.
+ 6.  NU records must precede NE records.
+ 7.  E must be the last record.
+
+ 

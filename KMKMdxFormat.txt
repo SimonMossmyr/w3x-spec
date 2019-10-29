@@ -1,0 +1,373 @@
+MDX Format
+
+No of bytes in chunk/struct/etc., excluding byte count:
+	long	nbytes
+No of bytes in chunk/struct/etc., including byte count:
+	long	nbytesi
+
+struct {
+	long	nbytesi;
+	ASCII	Name;			(0x50 bytes)
+	long	ObjectID;
+	long	Parent;			(0:default;0xFFFFFFFF:none)
+	long	???;			(HELP:0;
+							 BONE:256(def),264(billboarded);
+							 LITE:512;
+							 EVTS:1024;
+							 ATCH:2048;
+							 CLID:8192)
+	(KGTR)
+	(KGRT)
+	(KGSC)
+
+} OBJ;
+
+ATCH
+{
+	struct {
+		long	nbytesi;
+
+		OBJ		aobjs[naobs];
+
+		0x100 bytes of zeros
+		long	???;				(0)
+		long	???;				(0)
+
+
+		KATV
+
+	} attachments[natts];
+BONE
+	long	nbytes;
+	struct {
+		struct {
+			OBJ		bobjs[naobs];
+			long GeosetAnimID;
+			long GeosetID;				(96:multiple(0x00010000))
+		} bones[nbons];
+	} gbones[ngbns];
+CLID
+	long	nbytesi;
+	struct {
+		OBJ		cobjs[ncobs];
+		long	Shape;					(0:box;2:sphere)
+		struct {
+			float x, y, z;
+		} vertices[nvrts];
+
+		if (!(KGTR||KGRT||KGSC)) {
+			float BoundsRadius;
+		}
+	} collisionshape[nclds];
+EVTS
+	long	nbytes;
+	OBJ		eobjs[neobs];
+
+	KEVT
+GEOA
+	long	nbytes;
+	struct {
+		long	nbytes;
+		float	???;				(seems to be 1)
+		float	???;				(seems to be 0)
+		float	???;				(seems to be 1)
+		float	???;				(seems to be 1)
+		float	???;				(seems to be 1)
+		long	GeosetID;
+
+		KGAO
+
+	} geosanims[ngsan]
+GEOS
+	long	nbytes;
+	struct {
+		long	nbytes;
+
+		VRTX
+		NRMS
+		PTYP
+		PCNT
+		PVTX
+		GNDX
+		MTGC
+		MATS
+
+		float	BoundsRadius;
+		float	MinExtx, MinExty, MinExtz;
+		float	MaxExtx, MaxExty, MaxExtz;
+		long nanim;
+		struct {
+			float	BoundsRadius;
+			float	MinExtx, MinExty, MinExtz;
+			float	MaxExtx, MaxExty, MaxExtz;
+		} animations[nanim];
+
+		UVAS
+		UVBS
+
+	} objects[nobjs]
+GLBS
+	long	nbytes;
+	long	durations[ndurs];
+GNDX
+	long	nbytes;
+	struct {
+		byte	group;
+	} vertices[nvrts];
+HELP
+	long	nbytes;
+	OBJ		helpers[nhlps];
+KATV:Visibility
+	long	nunks;
+	long	LineType;				(0:don't interp;1:linear;2:hermite;3:bezier)
+	0xFFFFFFFF
+	struct {
+		long	???
+		float	State				(0 or 1)
+		if (LineType > 1) {
+			float	InTanx, InTany, InTanz;
+			float	OutTanx, OutTany, OutTanz;
+		}
+	} unknown[nunks];
+KEVT
+	long	ntrks;
+	0xFFFFFFFF
+	struct {
+		long	???;
+	} tracks[ntrks];
+}
+KGAO
+	long	nunks;
+	long	LineType;				(0:don't interp;1:linear;2:hermite;3:bezier)
+	0xFFFFFFFF
+	struct {
+		long	???;
+		float	State;				(0 or 1)
+	} unknowns[nunks];
+KGRT:Rotation
+	long	nunks;
+	long	LineType;				(0:don't interp;1:linear;2:hermite;3:bezier)
+	0xFFFFFFFF
+	struct {
+		long	???;
+		float	a, b, c, d;
+		if (LineType > 1) {
+			float	InTana, InTanb, InTanc, InTand;
+			float	OutTana, OutTanb, OutTanc, OutTand;
+		}
+	} unknown[nunks];
+KGSC:Scaling
+	long	nunks;
+	long	LineType;				(0:don't interp;1:linear;2:hermite;3:bezier)
+	0xFFFFFFFF
+	struct {
+		long	???
+		float	x, y, z;
+		if (LineType > 1) {
+			float	InTanx, InTany, InTanz;
+			float	OutTanx, OutTany, OutTanz;
+		}
+	} unknown[nunks];
+KGTR:Translation
+	long	nunks;
+	long	LineType;				(0:don't interp;1:linear;2:hermite;3:bezier)
+	0xFFFFFFFF
+	struct {
+		long	???;
+		float	x, y, z;
+		if (LineType != 1) {
+			float	InTanx, InTany, InTanz;
+			float	OutTanx, OutTany, OutTanz;
+		}
+	} unknown[nunks];
+KMTA
+	long	nunks;
+	long	LineType;				(0:don't interp;1:linear;2:hermite;3:bezier)
+	0xFFFFFFFF
+	struct {
+		long	???;
+		float	State;				(0 or 1)
+		if (LineType > 1) {
+			float	InTan;
+			float	OutTan;
+		}
+	} unknown[nunks];
+LAYS
+	long	nlays;
+	struct {
+		long	nbytesi;
+
+		long	FilterMode;			(0:none;1:transparent;2:blend;3:additive)
+		long	Shading;			(1:unshaded;+16:two sided;+32:unfogged)
+		long	TextureID;
+		0xFFFFFFFF
+		long	???;				(0)
+		float	Alpha;				(0(transparent)->1(opaque))
+
+		(KMTA)
+
+	} layers[nlays];
+LITE
+	long	nbytes;
+	struct {
+		long	nbytesi;
+		OBJ		lobj[nlobj];
+		long	Type				(0:omnidirectional)
+		float	AttStart, AttEnd;
+		float	Colr, Colg, Colb;
+		float	Intensity;
+		float	AmbColr ,AmbColg, AmbColb;
+		float	AmbIntensity;
+
+		KATV
+
+	} lights[nlits]
+MATS
+	long	nmtrs;
+	struct {
+		long	matrix;
+	} matrices[nmtrs];
+MDLXVERS
+	long	nbytes;
+	long	version; 				(currently 0x20030000 (800))
+MODL
+	long	nbytes;
+	ASCII	Name;					(0x150 bytes)
+	long	???;					(0)
+	long	???;					(0)
+	float	MinExtx, MinExty, MinExtz;
+	float	MaxExtx, MaxExty, MaxExtz;
+	long	BlendTime;
+MTGC
+	long	nunks;
+	struct {
+		long	???;				(1, 2 or 3)
+	} unknown[nunks];
+MTLS
+	long	nbytes;
+	struct {
+		long	nbytes;
+
+		long	???;				(0)
+		long	???;				(0)
+
+		LAYS
+	} materials[nmtls];
+NRMS
+	long	nvrts;
+	struct {
+		float	x,y,z;
+	} vertices[nvrts];
+PCNT
+	long	???;					(1)
+	long	ncrns;					(3*nfacs)
+PIVT
+	long	nbytes;
+	struct {
+		float x,y,z
+	} pivpts[npvps];
+PTYP
+	long	???;					(1)
+	long	???;					(4)
+PVTX
+	long	ncrns;					(3*nfacs)
+	struct {
+		long	vert1, vert2, vert3;
+	} faces[nfacs];
+SEQS
+	long	nbytes;
+	struct {
+		ASCII	Name;				(0x50 bytes)
+		long	IntStart, IntEnd;
+		long	MoveSpeed;
+		long	NoLooping;			(0:loop; 1:no loop)
+		long	Rarity;
+		long	???;
+		float	BoundsRadius;
+		float	MinExtx, MinExty, MinExtz;
+		float	MaxExtx, MaxExty, MaxExtz;
+	} sequences[nseqs];
+TEXS
+	long	nbytes
+	struct {
+		long	ReplaceableID;
+		ASCII	TexturePath;		(0x100 bytes)
+		long	???;				(0)
+		long	???;				(0)
+	} textures[ntexs];
+UVAS
+	long	???						(1)
+UVBS
+	long	nvrts;
+	struct {
+		float	x,y;
+	} vertices[nvrts];
+VRTX
+	long	nvrts;
+	struct {
+		float	x,y,z;
+	} vertices[nvrts];
+
+
++-MODEL_VERSION		[MDLXVERS]
+|
++-MODEL				[MODL]
+|
++-SEQUENCES			[SEQS]
+|
++-GLOBALS			[GLBS]
+|
++-MATERIALS			[MTLS]
+| |
+| +-ALPHA			[KMTA]
+|
++-TEXTURES			[TEXS]
+|
++-GEOSET			[GEOS]
+| |
+| +-VERTICES		[VRTX]
+| +-NORMALS			[NRMS]
+| +-PLANE_TYPE		[PTYP]
+| +-PLANE_CORNERS	[PCNT]
+| +-PLANE_VERTICES	[PVTX]
+| +-GROUP_VERTICES	[GNDX]
+| +-UNKNOWN1		[MTGC]
+| +-MATRICES		[MATS]
+| +-UNKNOWN2		[UVAS]
+| +-TEXTURE_COORDS	[UVBS]
+|
++-GEOSET_ANIM		[GEOA]
+| |
+| +-GEOA_OPERATIONS?[KGAO]
+|
++-BONES				[BONE]
+| |
+| +-GEO_TRANSLATION	[KGTR]
+| +-GEO_ROTATION	[KGRT]
+| +-GEO_SCALE		[KGSC]
+|
++-LIGHTS			[LITE]
+| |
+| +-VISIBILITY		[KATV]
+|
++-HELPERS			[HELP]
+| |
+| +-GEO_TRANSLATION	[KGTR]
+| +-GEO_ROTATION	[KGRT]
+| +-GEO_SCALE		[KGSC]
+|
++-ATTACHMENTS		[ATCH]
+| |
+| +-VISIBILITY		[KATV]
+|
++-PIVOTS			[PIVT]
+|
++-EVENTS			[EVTS]
+| |
+| +-EVENT_TRACKS	[KEVT]
+|
++-COLLISION_SHAPES	[CLID]
+  |
+  +-GEO_TRANSLATION	[KGTR]
+  +-GEO_ROTATION	[KGRT]
+  +-GEO_SCALE		[KGSC]

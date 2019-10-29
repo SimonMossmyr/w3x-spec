@@ -1,0 +1,3037 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>W3M and W3X Files Format</title></head>
+
+<body>Last update: 9/03/2006<p><u><b>Introduction</b></u></p>
+<p>This documentation contains almost all the
+specifications of Warcraft III maps files (<i>*.w3m and *.w3x</i>). This
+ was made without any help from Blizzard Entertainement and did not 
+involve "reverse engineering" of the Warcraft III engine. The 
+specification of each kind of file depend on its version. I did document
+ here the current version used by Warcraft III Retail (initial version);
+ make sure the file you're looking at or modifying are using the same 
+version/format as describbed. I'm French so please, forgive my English! 
+Finally, use this documentation at your own risks: I take no 
+responsability if you corrupt your maps.</p>
+		<p></p>
+		<p><b><u>1) Things
+you need to know first to mod' a map!</u></b></p>
+<p><b>1.1) Your environment</b></p>
+		<p>You'll need Warcraft III Retail installed let's say in
+"<i>C:\Program Files\Warcraft III\</i>".
+I'll talk about files of Warcraft 3 Retail (initial version) here,
+that's why some files format can vary depending which version you're
+using; you may have to figure out some differences in the file formats.
+I'll also describe the new format of in the expansion The Frozen
+Throne, if the file format got changed. If your Warcraft III
+installation is clean, you should have these files (of course, there
+are other files in there but I'll uses these for exemples):<br>
+in your "<i>C:\Program Files\Warcraft III\</i>":<br>
+�� - <i>war3.mpq</i><br>
+and in your "<i>C:\Program Files\Warcraft III\Maps\</i>":<br>
+�� - <i>(4)Lost Temple.w3m</i><br>
+�� (and many other w3m of course...)<br>
+			If you have also installed the expansion The Frozen Throne, you'll have other archives that hold the new files. These are:<br>
+�� <i> - war3x.mpq<br>
+ �� - war3xlocal.mpq<br>
+ 		</i>and in your "<i>C:\Program Files\Warcraft III\Maps\FrozenThrone\</i>":<br>
+��			  <i> -(2)Circumvention.w3x<br>
+��				  </i>   (as an example)<br>
+			and in your "<i>C:\Program Files\Warcraft III\Campaigns\</i>":<br>
+��			  <i> -DemoCampaign.w3n</i><br>
+			Also by installing updates a new archive will be added that holds the most up-to-date files from the patch, namely<br>
+��			  <i> -war3patch.mpq</i>
+		
+			
+		</p><p>"W3M" and "W3X" and also map files as well as "W3N" campaign files can be opened with any MPQ editor that supports Warcraft 3.<br>
+			
+You'll need one. I suggest WinMPQ (ShadowFlare), you can get it here:<br>
+			
+			�� <a href="http://shadowflare.samods.org/dwnload.html" target="_blank">http://shadowflare.samods.org/dwnload.html</a><br>
+			
+			�� Read the documentation and installation notes.<br>
+			You can also use Ladik's MPQ Editor which you can get here:<br>
+��			   <a href="http://www.zezula.net/en/mpq/download.html" target="_blank">http://www.zezula.net/en/mpq/download.html</a><br>
+��			   Place it in a folder and run it.<br>
+			Another option would be PowerMPQ which is also available in Italian and German:<br>
+			&nbsp;&nbsp; <a href="http://www.wc3campaigns.net/showthread.php?t=58908">http://www.wc3campaigns.net/showthread.php?t=58908</a><br>
+			
+��			   This one also allows creating executable patches which requires <a href="http://www.wc3sear.ch/index.php?p=Tools&amp;ID=18&amp;sid=" target="_blank">MPQDraft</a> in the same directory.</p>
+		<p>If you only see unknown files when opening maps or other archives you will also need up-to-date listfiles.<br>
+			You can get the latest listfiles for Warcraft at  <a href="http://www.wc3campaigns.net/tools/weu/stuff.html" target="_blank">http://www.wc3campaigns.net/tools/weu/stuff.html</a><br>
+All the above mentioned editors have a settings dialog where you can
+specify external listfiles that will be looked up for fmissing
+filenames. Simply add all your listfiles to this list and most unknown
+files should be identified now.<br>
+			
+If you want to "play" with the map files, you'll also need a hexadecimal editor.
+My favorite one is HexWorkshop (<a href="http://www.bpsoft.com/">http://www.bpsoft.com/</a>).<br>
+			A freeware alternative is XVI32 found at <a href="http://www.chmaas.handshake.de/">http://www.chmaas.handshake.de/</a> but it lacks quite a bunch of useful features.<br>
+		</p>
+		<p><b>1.2) Warcraft 3 Files</b></p>
+		<p>1.2.1) About� MPQ Files</p>
+<p>
+MPQ are like "zip" or "rar" files as they contain a
+directory structure with compressed files.<br>
+I'll not talk about the MPQ format here since Quantam did it already. If you want to know more about it I
+suggest you go there:<br>
+			<a href="http://www.zezula.net/" target="_blank">http://www.zezula.net/</a><br>If you want to edit MPQ archives I suggest you get SFmpqapi for your favourite programming language. It's available at<br>
+			<a href="http://shadowflare.samods.org/dwnload.html" target="_blank">http://shadowflare.samods.org/dwnload.html<br>
+			</a>for
+several programming languages including Delphi, C++ and Visual Basic.
+You can also download the source code of WinMPQ there to learn how to
+use SFmpqapi.</p>
+<p>1.2.2) Warcraft III�File Structure</p>
+		<p>
+When it's looking for a file, Warcraft III looks first in the "real"
+directories (the one you see in Windows Explorer) <u>if you set up a specific
+registery key</u> which is:<br>
+�� Path: <i>HKEY_CURRENT_USER\Software\Blizzard Entertainment\Warcraft III\</i><br>
+�� Key name: "<i>Allow Local Files</i>"<br>
+�� Key type: dword<br>
+�� Key value: 1<br>
+			<br>
+If the registery key is not set or the file was not found in the "real"
+directories, then it looks in your map (w3m file), then in the last
+patch mpq (War3Patch.mpq) and finally in the main mpq (War3x.mpq or
+War3xlocal.mpq if the expansion is installed) and lately in War3.mpq.<br>
+It means that you don't need to modify official MPQs (DON'T modify your War3.mpq!), you just need to
+use the same directory/file structure in your "<i>C:\Program Files\Warcraft III\</i>".<br>
+Adding files in a map (<i>.w3m</i>
+file) works with most of the files but not all. Remember that the
+WorldEditor reads the local files from the real directories even if
+"Allow Local Files" is not enabled in the registry.<br>
+It Works (for example) for:<br>
+<i>�� Units\unitUI.slk<br>�� Units\AbilityData.slk<br>
+��				   UI\MIDISounds.slk<br>
+�� Units\HumanUnitFunc.txt<br>
+�� Units\HumanUnitStrings.txt<br>
+�� Units\HumanAbilityFunc.txt<br>
+�� Units\HumanAbilityStrings.txt<br>
+�� Units\HumanUpgradeFunc.txt<br>
+�� Units\HumanUpgradeStrings.txt<br>
+</i>
+<br>But it doesn't work very well for:<br>
+			<i>�� Units\UnitMetaData.slk<br>
+��				   Scripts\Blizzard.j<br>
+			</i><br>
+			And it doesn't work at all for:<br>
+			 <i>��  TerrainArt\CliffTypes.slk<br>
+			</i><i>��  Units\MiscData.txt<br>
+			</i><br>
+If you really need to change a file that has to be loaded outside or
+before a map is loaded, I recommend you create a executable patch with
+a embedded MPQ archive using MPQDraft, which you can download at the
+above-mentioned link. This option is also used by the third party
+editors such as UMSWE.<br>
+			<br>
+			<u>
+Example:<br>
+			</u>You
+want to use more than the two default cliff types in a map. By editing
+the w3e file or by using WE Unlimited or Zepir's Editor you can
+technically add more cliff types to your map. The problem is that to
+have them show up correctly in game it will require a modified
+TerrainArt\CliffTypes.slk file. To make this work you will have to
+create a new MPQ Archive and import the modified file with the path
+TerrainArt\CliffTypes.slk. Also take care that a listfile entry is
+added for this file. Then start MPQDraft and create a new executable
+patch. Simply select the created archive as source and select Warcraft
+III�as the target application to patch. That's it, the patch will be
+created for you. Now if you start the created executable it will start
+Warcraft and the modified file will be used instead of the original one.<br>
+			<br>
+			<b>
+Warning!<br>
+				
+�� </b>- In some cases, if you play with others, everybody will need to have the same
+modified files or you'll get an error (like "<i>netsync error</i>").<br>
+			
+�� - Some files have a "special" format and if you modify them, you could
+"falsify" this format. In some cases it will work, in some others it won't. Be aware of that 'cause
+War3 will try to find a "standard file" instead (the ones of the MPQs instead of yours and
+you'll think it didn't try your stuff).<br>
+			
+�� - Some files outside both <i> War3.mpq</i> and <i> War3Patch.mpq</i> will not be used by Warcraft
+3. These are exceptions.<br>
+		</p>
+		<p>1.2.3) Map files (W3M/W3X Files)</p>
+		<p>
+To edit a map, you'll have to unpack the files of the "<i>w3m</i>" somewhere,
+then modify them and finally put them back in a "<i>w3m</i>" file (usually a new one).
+Since retail, W3M are a little bit different from simple MPQ files: they got a
+header and a footer. I'll talk more about the W3M format in the "W3M Files Format" section and
+the other files inside W3Ms in the following sections.<br>
+</p>
+<p><b>1.3) Warcraft 3 Data Format</b></p>
+<p>Blizzard uses several ways to store data in its files. However they often use generic types.<br>
+-Integers<br>
+</p><blockquote>
+Intergers are stored using 4 bytes in "Little Endian" order. It means
+that the first byte read is the lowest byte.<br>
+They are just like the C++ "int" (signed) type. In some other
+documentation of this kind you may see them named "long".<br>
+Size: 4 bytes<br>
+Example: 1234 decimal = [00 00 04 D2]h will be stored in this order: [D2 04 00
+00]h<br>
+</blockquote>
+-Short Integers<br>
+<blockquote>
+Short Integers are stored using 2 bytes in "Little Endian" order.<br>
+They are close to the C++ signed short but their range is from -16384 to 16383.
+It means the 2 highest bit are free of use for a flag for example.<br>Size: 2 bytes<br>
+</blockquote>
+-Floats<br>
+<blockquote>
+Floats are using the standard IEEE 32bit float format. They are stored using 4
+bytes and the "Little Endian" order.<br>
+They are just like the C++ "float" type.<br>
+Size: 4 bytes<br>
+Example: 7654.32 decimal, this number can't be stored using this format so the
+system will take the closest value that can be represented using binary digits. The closest one is:
+7654.319824 decimal = [45 EF 32 8F]h and will be stored as [8F 32 EF 45]h<br>
+</blockquote>
+-Chars and Array of Chars<br>
+<blockquote>
+They are just stored like standard chars (1 char = 1 byte) and array of chars
+(no null terminating char needed).<br>
+Size (chars): 1 byte<br>
+Size (array of chars): usually 4 bytes<br>
+</blockquote>
+-Trigger Strings and Strings<br>
+<blockquote>
+Strings are just arrays of chars terminated with a null char (C++ '\0'). However
+Blizzard sometimes use special control codes to change the displayed color for the string. These codes are like
+"|c00BBGGRR" where "BB", "GG" and
+"RR" are hexadecimal values (using 2 digits each) for the blue, the
+green and the red values. If a string starts with "TRIGSTR_" (case sensitive), it's considered
+as a trigger string. A trigger string is kept in memory as is ("TRIGSTR_***") and is only
+changed when Warcraft 3 needs to display it. Instead of just writing "TRIGSTR_000" on the user screen, War3 will
+look in its trigger string table created when the map was loaded and display the corresponding trigger string instead. Trigger
+strings only work for files inside a w3m (Jass, w3i, ...) except for the WTS which is used to define the trigger
+string table itself. If the number following "TRIGSTR_" is negative the trigger string will refer to a
+null (empty) string, if "TRIGSTR_" is followed by text, it'll be considered as trigger string #0 ( = "TRIGSTR_000").<br>
+"TRIGSTR_7", "TRIGSTR_07", "TRIGSTR_007" and
+"TRIGSTR_7abc" are all representing trigger string #7. "TRIGSTR_ab7", "TRIGSTR_abc" and "TRIGSTR_" refer
+to trigger string #0. "TRIGSTR_-7" is negative and will not refer to a trigger string; it'll
+be displayed as "". By convention, "TRIGSTR_" is followed by 3 digits and the null char
+that ends the string.<br>
+Example 1: your got the string "blah |c000080FFblah", War3 will display
+"blah blah" but the second "blah" will be orange (blue=00 + green=80 + red=FF ==&gt; orange)<br>
+Example 2: you got "TRIGSTR_025" and trigger string 25 is defined (in
+the .wts file) as "blah|c000080FFblah", it'll display the same result as the previous example.<br>
+Size (string): vary. String length + 1 (null terminating char)<br>Size (trigger string): 12 bytes<br>
+			<p>For
+its strings Warcraft uses a unicode format called UTF-8. They do this
+because the files need to be localized into many different languages.
+This format uses one byte for the most common characters which is equal
+to the character's ASCII value. For example A = 65 or 0x41. For the
+more unusual characters it can take from 2 to 6 bytes per character.
+For example the German letter � would be represented by 195 and 164 or
+0xC3A4. The higher the first byte is, the more bytes are required to
+represent the character. Simple modulo calculations are enough to
+convert UTF to common unicode (UCS) and back. To convert UTF to UCS use
+this pattern:<br>
+			</p>
+			<p>If  FirstByte &lt;= 191   return FirstByte<br>
+				If 192 &lt;= FirstByte &lt;= 223   return (FirstByte - 192) * 64 + (SecondByte - 128)<br>
+				If 224 &lt;= FirstByte &lt;= 239   return (FirstByte - 224) * 4096 + (SecondByte - 128) * 64 + (ThirdByte - 128)<br>
+If 240 &lt;= FirstByte &lt;= 247 return (FirstByte - 240) * 262144 +
+(SecondByte - 128) * 4096 + (ThirdByte - 128) * 64 + (FourthByte - 128)<br>
+If 248 &lt;=�FirstByte &lt;= 251 return (FirstByte - 248) * 16777216 +
+(SecondByte - 128) * 262144 + (ThridByte - 128) * 4096 + (FourthByte -
+128) * 64 + (FifthByte - 128)<br>
+If 252 &lt;= FirstByte return (FirstByte - 252) * 1073741824 +
+(SecondByte - 128) * 16777216 + (ThirdByte - 128) * 262144 +
+(FourthByte - 128) * 4096 + (FifthByte - 128) * 64 + (SixthByte - 128)</p>
+			<p>To convert UCS back to UTF use this:</p>
+			<p>If ASCII &lt;= 127   FirstByte = ASCII<br>
+				If 128 &lt;= ASCII &lt;= 2047   FirstByte = 192 + (ASCII \ 64) SecondByte = 128 + (ASCII Mod 64)<br>
+If 2048 &lt;= ASCII &lt;= 65535 FirstByte = 224 + (ASCII \ 4096)
+SecondByte = 128 + ((ASCII \ 64) Mod 64) ThirdByte = 128 + (ASCII Mod
+64)<br>
+If 65536 &lt;= ASCII &lt;= 2097151 FirstByte = 240 + (ASCII \ 262144)
+SecondByte = 128 + ((ASCII \ 4096) Mod 64) ThirdByte = 128 + ((ASCII \
+64) Mod 64) FourthByte = 128 + (ASCII Mod 64)<br>
+If 2097152 &lt;= ASCII &lt;= 67108863 FirstByte = 248 + (ASCII \
+16777216) SecondByte = 128 + ((ASCII \ 262144) Mod 64) ThirdByte = 128
++ ((ASCII \ 4096) Mod 64) FourthByte = 128 + ((ASCII \ 64) Mod 64)
+FifthByte = 128 + (ASCII Mod 64)<br>
+If 67108864 &lt;= ASCII &lt;= 2147483647 FirstByte = 252 + (ASCII \
+1073741824) SecondByte = 128 + ((ASCII \ 16777216) Mod 64) ThirdByte =
+128 + ((ASCII \ 262144) Mod 64) FourthByte = 128 + ((ASCII \ 4096) Mod
+64) FifthByte = 128 + ((ASCII \ 64) Mod 64) SixthByte = 128 + (ASCII
+Mod 64))</p>
+			<p>The
+conversion will only be needed if you want to display text in your
+application or write user input to files. For all other purposes you
+can internally treat the UTF-Strings just like ordinary strings.</p>
+		</blockquote>
+-Flags<br>
+<blockquote>
+Flags are boolean values (true or false, 1 or 0). They can be stored using 4
+bytes. Each bit is a flag (4 bytes = 32 bit = 32 flags). Blizzard uses integers to store its flags.<br>
+Size: usually 4 bytes<br>
+</blockquote>
+-Custom Types<br>
+<blockquote>
+Sometimes, an integer and one or several flags can share bytes. This is the case
+in the W3E file
+format: the water level and 2 flags are using the same group of 4 bytes. How?
+the 2 highest bit are used for the flags, the rest is reserved for the water level (the value range is
+just smaller). Sometimes a byte can contain two or more different data.<br>
+</blockquote>
+-Structures:<br>
+<blockquote>
+Warcraft 3 also uses structured types of various size.<br>
+</blockquote>
+�
+<p><b>
+<u>2) W3M/W3X Files Format</u></b></p>
+		<p>A W3M or W3X file is a
+Warcraft III Map file (AKA Warcraft III Scenario in the World Editor).
+It's just a MPQ (using a "new" compression format) with a 512 bytes
+header. Sometimes, for official W3M files, it uses a footer of 260
+bytes for authentification purposes.<br>
+<br>
+Here is the header format (fixed size = 512 bytes):<br>
+char[4]: file ID (should be "HM3W")<br>
+int: unknown<br>
+string: map name<br>
+int: map flags (these are exactly the same as the ones in the W3I file)<br>
+0x0001: 1=hide minimap in preview screens<br>
+0x0002: 1=modify ally priorities<br>
+0x0004: 1=melee map<br>
+0x0008: 1=playable map size was large and has never been reduced to medium<br>
+0x0010: 1=masked area are partially visible<br>
+0x0020: 1=fixed player setting for custom forces<br>
+0x0040: 1=use custom forces<br>
+0x0080: 1=use custom techtree<br>
+0x0100: 1=use custom abilities<br>
+0x0200: 1=use custom upgrades<br>
+0x0400: 1=map properties menu opened at least once since map creation<br>
+0x0800: 1=show water waves on cliff shores<br>
+0x1000: 1=show water waves on rolling shores<br>
+int: max number of players<br>
+followed by 00 bytes until the 512 bytes of the header are filled.<br>
+<br>Here is the footer format (optional):<br>
+char[4]: footer sign ID (should be "NGIS" == 'sign' reversed)<br>
+byte[256]: 256 data bytes for authentification. I don't know how they are used
+at the moment.<br>
+<br>
+The MPQ part can contain the following files:<br>
+(listfile)<br>
+(signature)<br>
+(attributes)<br>
+war3map.w3e<br>
+war3map.w3i<br>
+war3map.wtg<br>
+war3map.wct<br>
+war3map.wts<br>
+war3map.j<br>
+war3map.shd<br>
+war3mapMap.blp<br>
+war3mapMap.b00<br>
+war3mapMap.tga<br>
+war3mapPreview.tga<br>
+war3map.mmp<br>
+war3mapPath.tga<br>
+war3map.wpm<br>
+war3map.doo<br>
+war3mapUnits.doo<br>
+war3map.w3r<br>
+war3map.w3c<br>
+			war3map.w3s<br>
+			
+war3map.w3u<br>
+			war3map.w3t<br>
+			war3map.w3a<br>
+			war3map.w3b<br>
+			war3map.w3d<br>
+			war3map.w3q<br>
+			war3mapMisc.txt<br>
+			war3mapSkin.txt<br>
+			war3mapExtra.txt<br>
+			war3map.imp<br>
+			war3mapImported\*.* <br>
+			
+We'll see now what these files stand for.<br>
+		</p>
+		<p></p>
+		<p><b>
+<u>
+3) "war3map.j" The JASS2
+Script</u></b></p>
+		<p>
+This is the main map script file. It's a text file and you can open it with
+notepad.<br>
+			Sometimes it's renamed to Scripts\war3map.j by map protectors to keep you away from it.<br>The language used is called JASS2 and has been developed by Blizzard. It's a case sensitive language.<br>
+			When you play a map, the jass script is loaded and executed.<br>
+When you select a map in when creating a game Warcraft III will first
+look up the "config" function and execute its code to set up the player
+slots.<br>Then, when the game has started, Warcraft III looks for the function called "main" and executes it.<br>
+The language uses several keywords as described here:</p>
+<table width="100%" cellpadding="2" bordercolor="#000000" border="1" bgcolor="#c0c0c0">
+  <tbody><tr>
+    <td width="25%"><b>Key word</b></td>
+    <td width="75%"><b>Meaning</b></td>
+  </tr>
+  <tr>
+    <td width="25%">function</td>
+    <td width="75%">used to define a new fonction</td>
+  </tr>
+  <tr>
+    <td width="25%">takes</td>
+    <td width="75%">used to define the number of arguments for a fontction�</td>
+  </tr>
+  <tr>
+    <td width="25%">returns</td>
+    <td width="75%">sets the type of the value returned by a function</td>
+  </tr>
+  <tr>
+    <td width="25%">return</td>
+    <td width="75%">makes a function leaves and returns a value</td>
+  </tr>
+  <tr>
+    <td width="25%">endfunction</td>
+    <td width="75%">ends a function definition</td>
+  </tr>
+  <tr>
+    <td width="25%">call</td>
+    <td width="75%">used to call a function that returns nothing</td>
+  </tr>
+  <tr>
+    <td width="25%">globals</td>
+    <td width="75%">used to define the list of global variables</td>
+  </tr>
+  <tr>
+    <td width="25%">endglobals</td>
+    <td width="75%">ends the list of global variables definition</td>
+  </tr>
+  <tr>
+    <td width="25%">local</td>
+    <td width="75%">defines a local variable</td>
+  </tr>
+  <tr>
+    <td width="25%">set</td>
+    <td width="75%">assigns a value to a variable</td>
+  </tr>
+  <tr>
+    <td width="25%">if, elseif, else, then, endif</td>
+    <td width="75%">if (...) then ...<br>
+      elseif (...) then ...<br>
+      else ...<br>
+      endif
+      <p>Just an "if-then-else-endif" chain like in Basic.</p></td>
+  </tr>
+  <tr>
+    <td width="25%">loop, exitwhen, endloop</td>
+    <td width="75%">used to make loops in the script</td>
+  </tr>
+  <tr>
+    <td width="25%">constant</td>
+    <td width="75%">defines a constant</td>
+  </tr>
+  <tr>
+    <td width="25%">type</td>
+    <td width="75%">defines a new type/class</td>
+  </tr>
+  <tr>
+    <td width="25%">extends</td>
+    <td width="75%">says what the mother type is</td>
+  </tr>
+  <tr>
+    <td width="25%">native</td>
+    <td width="75%">defines a function header of an external built-in function
+      implemented in <i>Game.DLL</i></td>
+  </tr>
+			<tr>
+				<td width="25%">array</td>
+				<td width="75%">used to define array variables</td>
+			</tr>
+		</tbody></table>
+<p>Only two "native types" exists: "<i>nothing</i>" and
+"<i>handle</i>". All the other types are derived (keyword "<i>extends</i>")
+from "<i>handle</i>". You can get the full list of types and native functions from the file called
+"<i>Scripts\Common.j</i>" in your <i>War3.mpq</i> file. You can assign
+several types of constant values to the handle type:� a generic null value
+called "<i>null</i>", any interger, any float, any string or trigger
+string, "<i>true</i>" and "<i>false</i>".<br>
+<br>
+Here is the lis of operators recognized by the language:
+<table width="100%" cellpadding="2" bordercolor="#000000" border="1" bgcolor="#c0c0c0">
+  <tbody><tr>
+    <td width="25%"><b>Operator</b></td>
+    <td width="75%"><b>meaning</b></td>
+  </tr>
+  <tr>
+    <td width="25%">( )</td>
+    <td width="75%">parenthesis for priorities</td>
+  </tr>
+  <tr>
+    <td width="25%">+</td>
+    <td width="75%">addition (concatenation for strings)</td>
+  </tr>
+  <tr>
+    <td width="25%">-</td>
+    <td width="75%">substraction</td>
+  </tr>
+  <tr>
+    <td width="25%">*</td>
+    <td width="75%">multiplication</td>
+  </tr>
+  <tr>
+    <td width="25%">/</td>
+    <td width="75%">division</td>
+  </tr>
+  <tr>
+    <td width="25%">=</td>
+    <td width="75%">assignation</td>
+  </tr>
+  <tr>
+    <td width="25%">= =, &lt;, &lt;=, &gt;, &gt;=, !=</td>
+    <td width="75%">comparison (equal, lighter, lighter or equal, greater,
+      greater or equal, different)</td>
+  </tr>
+  <tr>
+    <td width="25%">not</td>
+    <td width="75%">invert a boolean value�</td>
+  </tr>
+			<tr>
+				<td width="25%">and</td>
+				<td width="75%">connects boolean values (both must be true to be true)</td>
+			</tr>
+			<tr>
+				<td width="25%">or</td>
+				<td width="75%">connects boolean values (one must be true to be true)</td>
+			</tr>
+			<tr>
+				<td width="25%">[]</td>
+				<td width="75%">parenthesis for arrays</td>
+			</tr>
+		</tbody></table>
+		</p><p><br>
+			The language knows the following six primitive types:
+		<table width="100%" cellpadding="2" bordercolor="#000000" border="1" bgcolor="#c0c0c0">
+			<tbody><tr>
+				<td width="25%"><b>Type</b></td>
+				<td width="75%"><b>meaning</b></td>
+				<td width="75%" nowrap="nowrap"><b>example</b></td>
+			</tr>
+			<tr>
+				<td width="25%">boolean</td>
+				<td width="75%">can be true or false</td>
+				<td width="75%" nowrap="nowrap">local boolean B = true</td>
+			</tr>
+			<tr>
+				<td width="25%">integer</td>
+				<td width="75%">can hold whole numbers</td>
+				<td width="75%" nowrap="nowrap">local integer I =�0</td>
+			</tr>
+			<tr>
+				<td width="25%">real</td>
+				<td width="75%">can hold floating point numbers</td>
+				<td width="75%" nowrap="nowrap">local real R =�0.25</td>
+			</tr>
+			<tr>
+				<td width="25%">string</td>
+				<td width="75%">can hold strings, or null</td>
+				<td width="75%" nowrap="nowrap">local string S =�"hello world"</td>
+			</tr>
+			<tr>
+				<td width="25%">code</td>
+				<td width="75%">can hold pointers to functions, or null</td>
+				<td width="75%" nowrap="nowrap">local code C =�function main</td>
+			</tr>
+			<tr>
+				<td width="25%">handle</td>
+				<td width="75%">holds pointers to objects, or null</td>
+				<td width="75%" nowrap="nowrap">local handle H =�null</td>
+			</tr>
+		</tbody></table>
+		</p><p><br>
+These six types are the only native types, the others are declared in
+"Scripts\Common.j" and are all derived objects from the handle type
+such as units, items, destructables, timers, triggers and many more.
+Handle is the only extendable type of the language. All native
+functions usable in the map script are also defined in the file
+"Scripts\Common.j", though you can also use functions from "<i>Scripts\Blizzard.j</i>",
+which are used by the GUI triggers of the World Editor. The language is
+also used for AI files in warcraft. In AI scripts you can use functions
+from "Scripts\Common.j" and "Scripts\Common.ai".<br>
+			
+Example of a function definition:<br>
+		</p>
+		<blockquote>
+<i><b><font color="#0000ff">
+function</font></b> myfunction <font color="#0000ff"><b> takes</b></font> nothing
+<font color="#0000ff"><b> returns</b></font> integer<br>
+�� <font color="#0000ff"><b>local</b></font> string <font color="#800080"> str</font> =
+<font color="#800000"> "blah blah blah"</font><br>
+�� <font color="#0000ff"><b>local</b></font> integer <font color="#800080"> i</font><br>
+�� <font color="#008000">// comments line<br>
+</font>
+�� <b><font color="#ff0000">set</font></b> i = <font color="#800000">0</font><br>
+�� <font color="#0000ff"><b>loop</b></font><br>
+����� <font color="#ff0000"><b>set</b></font> <font color="#800080">i
+</font>= <font color="#800080">i</font> +<font color="#800000"> 1</font><br>
+����� <font color="#0000ff"><b>if</b></font> (<font color="#800080">i</font>
+== <font color="#800000">27</font>) <font color="#0000ff"><b>then</b></font><br>
+����� �� <font color="#0000ff"><b>call</b></font> DisplayTimedTextToPlayer(GetLocalPlayer(),
+<font color="#800000">0</font>, <font color="#800000">0</font>, <font color="#800000">60</font>,
+<font color="#800080">str</font>)<br>
+����� <b><font color="#0000ff">endif</font></b><br>
+����� <font color="#0000ff"><b>exitwhen</b></font> <font color="#800080">i</font>
+== <font color="#800000">30</font><br>
+�� <font color="#0000ff"><b>endloop</b></font><br>
+�� <font color="#0000ff"><b>return</b></font> <font color="#800080"> i</font><br>
+<font color="#0000ff"><b>
+endfunction</b></font>�</i>
+</blockquote> One interesting fact is that all types have the same
+length of 4 bytes. This allows "type casting" by abusing hole in the
+syntax checker that only requires the last return statement of a
+function to conform the declared return type. Therefore we can use so
+called return bug exploiters such as the following to do amazing
+things: <p><i><b><font color="#0000ff">function</font></b> Int2Handle <font color="#0000ff"><b> takes</b></font> integer I <font color="#0000ff"><b> returns</b></font> handle<br>
+				  <font color="#0000ff"><b>return</b></font> <font color="#800080">I</font><br>
+				  <font color="#0000ff"><b>return</b></font> <font color="#800080">null<br>
+				</font><font color="#0000ff"><b>endfunction</b></font>�<br>
+			</i></p>
+		<p><i><b><font color="#0000ff">function</font></b> Handle2Int <font color="#0000ff"><b> takes</b></font> handle H <font color="#0000ff"><b> returns</b></font> integer<br>
+				� <font color="#0000ff"><b>return</b></font> <font color="#800080">H</font><br>
+				� <font color="#0000ff"><b>return</b></font> <font color="#800080">0<br>
+				</font><font color="#0000ff"><b>endfunction</b></font>�<br>
+			</i></p>
+		<p>Whereas
+the 4 bytes of booleans, integers and reals hold the actual value of
+the variable, the other types are only pointers. Strings are pointers
+to an internal string array, where all strings are stored. Code,
+handles and all handle derived types are just pointers to functions and
+objects in memory. This means that we can store every variable in game
+cache by using the "StoreInteger" function. The game cache was
+originally inteded for handing over data from one map to another by
+saving it to a cache file. But nowadays the cache is mainly used as a
+hash function to write information directly into memory and read it out
+later. This also enables communication between the map script and ai
+files.</p>
+		<p>You can write integers in the following three different ways:<br>
+			- ordinary: just like in any other language�(65)<br>
+			- hex: in hexadecimal form with the 0x preset (0x3f)<br>
+			- literal: as integer literal by putting the character with the equivalent ascii value in single quotes�('A')</p>
+		<p>Most
+ids such as unit ids, item ids, destructable ids and some more are also
+integer literals, for example 'Ahbz'. The characters within the single
+quotes have the same limitations as characters in strings, except that
+there is no escape character. The character "\" is the escape character
+in strings which is used to place special characters:<br>
+			-\n and \r: line break<br>
+			-\": to use the " character in strings<br>
+			-\\: to use the \ character in strings</p>
+		<p>Find more comprehensive documentation on JASS and a Syntax Checker at <a href="http://jass.sourceforge.net/doc/" target="_blank">http://jass.sourceforge.net/doc/</a><br>
+		</p>
+		<p></p>
+		<p><b><u>
+4) "war3map.w3e" The
+environment</u></b></p>
+		<p>This
+is the tileset file. It contains all the data about the tilesets of the
+map. Let's say the map is divided into squares called "tiles". Each
+tile has 4 corners. In 3D, we define surfaces using points and in this
+case tiles are defined by their corners. I call one tile corner a
+"tilepoint". So if you want a 256x256 map, you'll have 257x257
+tilepoints. That's also why a tile texture is defined by each of its
+four tilepoints. A tile can be half dirt, one quarter grass and one
+quarter rock for example. The first tilepoint defined in the file
+stands for the lower left corner of the map when looking from the top,
+then it goes line by line (horizontal). Tilesets are the group of
+textures used for the ground. Here is the file format:<br>
+		</p>
+		<p>
+Header:<br>
+			
+char[4]: file ID = "W3E!"<br>
+			
+int: w3e format version [0B 00 00 00]h = version 11<br>
+			
+char: main tileset [TS]<br>
+		</p>
+		<table width="300" cellpadding="2" bordercolor="#000000" border="1">
+  <tbody><tr>
+    <td width="50%"><b>Tileset</b></td>
+    <td width="50%"><b>Meaning</b></td>
+  </tr>
+  <tr>
+    <td width="50%">A</td>
+    <td width="50%"> Ashenvale</td>
+  </tr>
+  <tr>
+    <td width="50%"> B�</td>
+    <td width="50%"> Barrens</td>
+  </tr>
+  <tr>
+    <td width="50%">C</td>
+    <td width="50%">Felwood</td>
+  </tr>
+  <tr>
+    <td width="50%">D</td>
+    <td width="50%">Dungeon</td>
+  </tr>
+  <tr>
+    <td width="50%"> F�</td>
+    <td width="50%">Lordaeron Fall</td>
+  </tr>
+  <tr>
+    <td width="50%">G</td>
+    <td width="50%">Underground</td>
+  </tr>
+  <tr>
+    <td width="50%"> L</td>
+    <td width="50%"> Lordaeron Summer</td>
+  </tr>
+  <tr>
+    <td width="50%"> N</td>
+    <td width="50%"> Northrend</td>
+  </tr>
+  <tr>
+    <td width="50%">Q</td>
+    <td width="50%">Village Fall</td>
+  </tr>
+  <tr>
+    <td width="50%"> V</td>
+    <td width="50%"> Village</td>
+  </tr>
+  <tr>
+    <td width="50%"> W</td>
+    <td width="50%"> Lordaeron Winter</td>
+  </tr>
+  <tr>
+    <td width="50%">X</td>
+    <td width="50%">Dalaran</td>
+  </tr>
+  <tr>
+    <td width="50%">Y</td>
+    <td width="50%">Cityscape</td>
+  </tr>
+			<tr>
+				<td width="50%">Z</td>
+				<td width="50%">Sunken Ruins</td>
+			</tr>
+			<tr>
+				<td width="50%">I</td>
+				<td width="50%">Icecrown</td>
+			</tr>
+			<tr>
+				<td width="50%">J</td>
+				<td width="50%">Dalaran Ruins</td>
+			</tr>
+			<tr>
+				<td width="50%">O</td>
+				<td width="50%">Outland</td>
+			</tr>
+			<tr>
+				<td width="50%">K</td>
+				<td width="50%">Black Citadel</td>
+			</tr>
+		</tbody></table>
+<p><br>
+int: custom tilesets flag (1 = using cutom, 0 = not using custom tilesets)<br>
+int: number <i>a</i> of ground tilesets used (Little Endian) (note: should not be
+greater than 16 because of tilesets indexing in tilepoints definition)<br>
+char[4][<i>a</i>]: ground tilesets IDs (tilesets table)<br>
+�� Example: "Ldrt" stands for "<i>Lordaeron Summer Dirt</i>"<br>
+�� (refer to the files "<i>TerrainArt\Terrain.slk</i>" located in your
+<i> war3.mpq</i>
+for more details)<br>
+int: number <i>b</i> of cliff tilesets used (Little Endian) (note: should not be
+greater than 16 because of tilesets indexing in tilepoints definition)<br>
+char[4][<i>b</i>]: cliff tilesets IDs (cliff tilesets table)<br>
+�� Example: "CLdi" stands for Lordaeron Cliff Dirt<br>
+�� (refer to the files "<i>TerrainArt\CliffTypes.slk</i>" located in your
+<i>
+war3.mpq</i> for more details)<br> the cliff tile list is actually
+ignored, the World Editor will simply add the cliff tiles for each tile
+in the ground tile list, if a cliff version of this ground tile exists<br>
+int: width of the map + 1 = Mx<br>
+int: height of the map + 1 = My<br>
+�� Example: if your map is 160x128, Mx=A1h and My=81h<br>
+float: center offeset of the map X<br>
+float: center offeset of the map Y<br>
+�� These 2 offsets are used in the scripts files, doodads and more.<br>
+�� The orginal (0,0) coordinate is at the bottom left of the map (looking from the
+top) and it's easier to work with (0,0) in the middle of the map so usually, these offsets are :<br>
+����� -1*(Mx-1)*128/2 and -1*(My-1)*128/2<br>
+�� where:<br>
+����� (Mx-1) and (My-1) are the width and the height of the map<br>
+����� 128 is supposed to be the size of tile on the map<br>
+����� /2 because we don't want the length but the middle.<br>
+����� -1* because we're "translating" the center of the map, not giving it's
+new coordinates<br>
+<br>
+Data:<br>
+Each tilepoint is defined by a block of 7 bytes.<br>
+The number of blocks is equal to Mx*My.<br>
+short: ground height<br>
+C000h: minimum height (-16384)<br>
+2000h: normal height (ground level 0)<br>
+3FFFh: maximum height (+16383)<br>
+short: water level + map edge boundary flag*(see notes)<br>
+4bit: flags*(see notes)<br>
+4bit: ground texture type (grass, dirt, rocks,...)<br>
+1byte: texture details (of the tile of which the tilepoint is the bottom left
+corner) (rocks, holes, bones,...). It appears that only a part of this byte is 
+used for details. It needs more investigations<br>
+4bit: cliff texture type<br>
+4bit: layer height<br>
+<br>
+*flags notes:<br>
+Flags values (shown as big endian):<br>
+�� 0x4000 --&gt; boundary flag 1 (shadow generated by the world editor on the edge
+of the map)<br>
+�� 0x0010 --&gt; ramp flag (used to set a ramp between two layers)<br>
+�� 0x0020 --&gt; blight flag (ground will look like Undead's ground)<br>
+�� 0x0040 --&gt; water flag (enable water)<br>
+�� 0x0080 --&gt; boundary flag 2 (used on "camera bounds" area. Usually
+set by the World Editor "boundary" tool.)<br>
+<br>
+Water level:<br>
+Water level is stored just like ground height. The highest bit (bit 15) is used
+for the boundary flag 1.<br>
+<br>
+Tilepoint data example:<br>
+51 21 00 62 56 84 13<br>
+51 21 --(little endian)--&gt; 0x2151 --(hex--&gt;dec)--&gt; height = 8529<br>
+00 62 --(little endian)--&gt; 0x6200<br>
+�� (extract boundary flag)--&gt; (0x6200 &amp; 0xC000) = 0x4000 boundary flag set<br>
+�� (extract water data)--&gt; (0x6200 &amp; 0x3FFF) = 0x2200
+--(hex--&gt;dec)--&gt; water level = 8704<br>
+56 --&gt; 5 sets both water flag and ramp flag, 6 means tilepoint is using
+ground type #6 in the tilesets table<br>
+84 --&gt; means tilepoint is using detail texture #132 (=0x084)<br>
+13 --&gt; 1 means cliff type #1 (cliff tilesets table), 3 means tilepoint on
+layer "3"<br>
+The tilepoint "final height" you see on the WE is given by:<br>
+(ground_height - 0x2000 + (layer - 2)*0x0200)/4<br>
+where "0x2000" is the "ground zero" level, 2 the "layer
+zero" level and "0x0200" the layer height<br>
+�� = (0x2151 - 0x2000 + 1*0x0200)/4<br>
+�� = (8529 - 8192 + 512)/4<br>
+�� = 212,25<br>
+<br>
+The tilepoint "water level" you see on the WE is given by:<br>
+(water_level - 0x2000)/4 - 89.6<br>
+where "0x2000" is the "ground zero" level, -89.6 is the
+water zero level (given by the water.slk file height = -0,7 --&gt; water_zero_level = -0,7*128):<br>
+�� = 8704/4 - 89,6<br>
+�� = 38,4<br>
+<br>
+In this case, water flag is set and water level is below the ground level so we
+will not see the water. This is just an example and I don't think you can find such a tilepoint
+on a map. It was just here for demonstration purpose.<br>
+</p>
+		<p></p>
+		<p><b><u>
+5) "war3map.shd" The Shadow
+Map File</u></b></p>
+<p>
+This file has no header, only raw data.<br>
+Size of the file = 16*map_width*map_height<br>
+1byte can have 2 values:<br>
+00h = no shadow<br>
+FFh = shadow<br>
+Each byte set the shadow status of 1/16 of a tileset.<br>
+It means that each tileset is divided in 16 parts (4*4).<br>
+</p>
+		<p></p>
+		<p><b><u>
+6) "war3mapPath.tga" The
+Image Path file and/or "war3map.wpm" The Path Map File</u></b></p>
+<p>
+Only one of these two file is used for pathing. Old War3 beta versions
+(&lt;=1.21) use the "war3mapPath.tga".<br>
+Since beta 1.30, Warcraft 3 uses a new file format instead:
+"war3map.wpm".</p>
+<p><b>6.1) "war3mapPath.tga" The Image Path file</b></p>
+<p>
+It's an standard 32bits RGB TGA file with no compression and a black alpha
+channel. The TGA format is really important because if Warcraft III doesn't recognise the
+file format, it'll
+do weird things on the tilesets (like put blight everywhere)! Don't forget the
+alpha channel! Each tile of the map is divided in 16 pixels (4*4 like in the shadow file), so
+the TGA width is 4*map_width and its height is 4*map_height and each pixel on the TGA affects a
+particular part of a tileset on the map. The color of a pixel sets the rules for that part.
+The top left corner of the image is the upper left corner on the map.<br>
+<br>
+Header format (18 bytes):<br>
+byte: ID Length = 0<br>
+byte: Color Map Type = 0<br>
+byte: Image Type = 2 (uncompressed RGB)<br>
+-- Color Map Specification (5 bytes) --<br>
+byte[2]: First Entry Index = 0<br>
+byte[2]: Color Map Length = 0<br>
+byte: Color Map Entry Size = 0<br>
+-- Image Spec (10 bytes) --<br>
+byte[2]: X origin = 0<br>
+byte[2]: Y origin = 0<br>
+byte[2]: image width (little endian)<br>
+byte[2]: image height (little endian)<br>
+byte: Pixel depth = 32 (=0x20)<br>
+byte: Image Descriptor = 0x28 (0x20=image starts from top left, 0x08=8bit for
+alpha chanel)<br>
+Example (where "XX XX" is a width and "YY YY" a height):<br>
+00 00 02 00 00 00 00 00 00 00 00 00 XX XX YY YY 20 28<br>
+<br>
+Data:<br>
+One pixel is defined by 4 bytes:<br>
+BB GG RR AA<br>
+Where:<br>
+BB is the blue value (0 or 255)<br>
+GG is the green value (0 or 255)<br>
+RR is the red value (0 or 255)<br>
+AA is the alpha chanel value (set to 0)<br>
+There are 4*4 pixels for 1 tileset.<br>
+The TGA width is map_width*4.<br>
+The TGA height is map_height*4.<br>
+<br>
+Here is the color code:<br>
+</p>
+<table width="100%" cellpadding="2" bordercolor="#000000" border="1">
+  <tbody><tr>
+    <td width="25%"><b>Color</b></td>
+    <td width="25%"><b>Build state</b></td>
+    <td width="25%"><b>Walk state</b></td>
+    <td width="25%"><b>Fly state</b></td>
+  </tr>
+  <tr>
+    <td width="25%">
+White�</td>
+    <td width="25%"> no build</td>
+    <td width="25%"> no walk</td>
+    <td width="25%"> no fly</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Red�</td>
+    <td width="25%"> build ok</td>
+    <td width="25%"> no walk</td>
+    <td width="25%"> fly ok</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Yellow</td>
+    <td width="25%"> build ok</td>
+    <td width="25%"> no walk</td>
+    <td width="25%"> no fly</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Green�</td>
+    <td width="25%"> build ok</td>
+    <td width="25%"> walk ok</td>
+    <td width="25%"> no fly</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Cyan�</td>
+    <td width="25%"> no build</td>
+    <td width="25%"> walk ok</td>
+    <td width="25%"> no fly</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Blue�</td>
+    <td width="25%"> no build</td>
+    <td width="25%">walk ok</td>
+    <td width="25%"> fly ok</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Magenta�</td>
+    <td width="25%"> no build</td>
+    <td width="25%"> no walk</td>
+    <td width="25%"> fly ok</td>
+  </tr>
+  <tr>
+    <td width="25%">
+Black�</td>
+    <td width="25%"> build ok</td>
+    <td width="25%"> fly ok</td>
+    <td width="25%"> walk ok</td>
+  </tr>
+</tbody></table>
+<p>
+To sum up, when <font color="#ff0000"> red</font> is set it means "<font color="#ff0000">no walk</font>", when
+<font color="#00c000"> green</font> is set
+"<font color="#00c000">no fly</font>" and when <font color="#0000ff"> blue</font> is set "<font color="#0000ff">no
+build</font>".<br>
+The <font color="#808080"> alpha channel</font> is used to set where <font color="#808080"> blight</font> is (black = normal, white =
+blight).<br>
+</p>
+<p><b>6.2) "war3map.wpm" The Path Map File</b></p>
+<p>
+Header:<br>
+char[4]: file ID = 'MP3W'<br>
+int: file version = 0<br>
+int: path map width (=map_width*4)<br>
+int: path map height (=map_height*4)<br>
+<br>
+Data:<br>
+Each byte of the data part is a part of a tileset exactly like for the TGA.<br>
+Data size: (map_height*4)*(map_with*4) bytes<br>
+Flags table:<br>
+0x01: 0 (unused)<br>
+0x02: 1=no walk, 0=walk ok<br>
+0x04: 1=no fly, 0=fly ok<br>
+0x08: 1=no build, 0=build ok<br>
+0x10: 0 (unused)<br>
+0x20: 1=blight, 0=normal<br>
+0x40: 1=no water, 0=water<br>
+0x80: 1=unknown, 0=normal<br>
+<br>
+Exmaple:<br>
+value: use:<br>
+00 bridge doodad<br>
+08 shallow water<br>
+0A deep water<br>
+40 normal ground<br>
+48 water ramp, unbuildable grounds, unbuildable parts of doodads<br>
+CA cliff edges, solid parts of doodads (no build and no walk)<br>
+CE edges of the map (boundaries)<br>
+</p>
+		<p></p>
+		<p><b><u>
+7) "war3map.doo" The doodad
+file for trees</u></b></p>
+		<p>
+The file contains the trees definitions and positions.<br>
+Here is the Format:<br>
+			<u>Header</u>:<br>
+char[4]: file ID = "W3do"<br>
+int: file version = 7<br>int: subversion? (usually set to [09 00 00 00]h, rarely [07 00 00 00]h)<br>
+int: number of trees defined<br>
+			<u>
+Data:</u><br>
+			
+Each tree is defined by a block of 42 bytes organized like this:<br>
+char[4]: Tree ID (can be found in the file
+"Units\DestructableData.slk")<br>
+int: Variation (little endian)<br>
+float: Tree X coordinate on the map<br>
+float: Tree Y coordinate on the map<br>
+float: Tree Z coordinate on the map<br>
+float: Tree angle (radian angle value)(degree = radian*180/pi)<br>
+float: Tree X scale<br>
+float: Tree Y scale<br>
+float: Tree Z scale<br>
+byte: Tree flags*<br>
+byte: Tree life (integer stored in %, 100% is 0x64, 170% is 0xAA for example)<br>
+int: Tree ID number in the World Editor (little endian) (each tree has a
+different one)<br>
+<br>
+*flags:<br>
+0= invisible and non-solid tree<br>
+1= visible but non-solid tree<br>
+2= normal tree (visible and solid)<br>
+<br>
+To sum up how it looks:<br>
+tt tt tt tt vv vv vv vv xx xx xx xx yy yy yy yy zz zz zz zz aa aa aa aa xs xs xs
+xs ys ys ys ys zs<br>
+zs zs zs ff ll dd dd dd dd<br>
+where:<br>
+tt: type<br>
+vv: variation<br>
+xx: x coordinate<br>
+yy: y coordinate<br>
+zz: z coordinates<br>
+aa: rotation angle<br>
+xs: x scale<br>
+ys: y scale<br>
+zs: z scale<br>
+ff: flags<br>
+ll: life<br>
+dd: doodad number in the editor<br>
+<br>
+Example (this is the second tree of Legend):<br>
+4C 54 6C 74 08 00 00 00 00 00 74 45 00 00 70 44 00 10 24 44 E5 CB 96 40 98 85 98
+3F 98 85 98 3F 98 85 98 3F 02 64 8D 01 00 00<br>
+<br>
+4C 54 6C 74 --&gt; LTlt (tree type)<br>
+08 00 00 00 --&gt; 00000008 = variation #8 (changes the shape of the tree)<br>
+00 00 74 45 --&gt; X=3904.<br>
+00 00 70 44 --&gt; Y=960.<br>
+00 10 24 44 --&gt; Z=656.25<br>
+E5 CB 96 40 --&gt; Angle (float value=4.7123895, angle=270�)<br>
+98 85 98 3F --&gt; X_Scale=1.191577<br>
+98 85 98 3F --&gt; Y_Scale=1.191577<br>
+98 85 98 3F --&gt; Z_Scale=1.191577<br>
+02 --&gt; tree is solid and selectable<br>
+64 --&gt; life=100% of default tree life<br>
+8D 01 00 00 --&gt; 0000018D=397, tree number 397<br>
+<br>
+			After the last tree definition, there we have the special doodads (which can't be edited once they are placed)<br>
+			int: special doodad format version set to '0'<br>
+			
+int: number "s" of "special" doodads ("special" like cliffs,...)<br>
+			
+Then "s" times a special doodad structure (16 bytes each):<br>
+			
+char[4]: doodad ID<br>
+			int: Z? (0)<br>
+			
+int: X? (w3e coordinates)<br>
+			
+int: Y? (w3e coordinates)<br>
+			
+�</p>
+		<p><font color="#800000"><u><b>NEW "Frozen Throne expansion pack beta" format:<br>
+</b></u></font></p>
+		<p><u>Header:</u><br>
+			
+char[4]: file ID = "W3do"<br>
+			
+int: file version = 8<br>int: subversion? ([0B 00 00 00]h)<br>
+			
+int: number of trees defined<br>
+			<u>Data</u><br>Each tree is defined by a block of (usually) 50 bytes 
+but in this version the length can vary because of the random item sets.
+ The data is organized like this:<br>
+			
+char[4]: Tree ID (can be found in the file "Units\DestructableData.slk")<br>
+			
+int: Variation (little endian)<br>
+			
+float: Tree X coordinate on the map<br>
+			
+float: Tree Y coordinate on the map<br>
+			
+float: Tree Z coordinate on the map<br>
+			
+float: Tree angle (radian angle value)(degree = radian*180/pi)<br>
+			
+float: Tree X scale<br>
+			
+float: Tree Y scale<br>
+			
+float: Tree Z scale<br>
+			
+byte: Tree flags*<br>
+			
+byte: Tree life (integer stored in %, 100% is 0x64, 170% is 0xAA for example)<br>int: Random item table pointer<br>
+			if -1 -&gt;&nbsp;no item table<br>
+			if &gt;= 0 -&gt; items from the item table with this number (defined in the w3i) are dropped on death<br>int: number "n" of  item sets dropped on death (this can only be greater than 0 if the item table pointer was -1)<br>
+			then there is n times a item set structure<br>
+			
+int: Tree ID number in the World Editor (little endian) (each tree has a 
+different one)<br>
+			<br>
+			
+*flags:<br>
+			
+0= invisible and non-solid tree<br>
+			
+1= visible but non-solid tree<br>
+			
+2= normal tree (visible and solid)<br>
+			<br>
+			
+To sum up how it looks:<br>
+			
+tt tt tt tt vv vv vv vv xx xx xx xx yy yy yy yy zz zz zz zz aa aa aa aa xs xs xs 
+xs ys ys ys ys zs <br>
+			
+zs zs zs ff ll bb bb bb bb cc cc cc cc dd dd dd dd<br>
+			
+where:<br>
+			
+tt: type<br>
+			
+vv: variation<br>
+			
+xx: x coordinate<br>
+			
+yy: y coordinate<br>
+			
+zz: z coordinates<br>
+			
+aa: rotation angle<br>
+			
+xs: x scale<br>
+			
+ys: y scale<br>
+			
+zs: z scale<br>
+			
+ff: flags<br>
+			
+ll: life<br>
+			
+bb: unknown<br>
+			
+cc: unknown<br>
+			dd: doodad number in the editor<br>
+			<br>
+			After the last tree definition, there we have the special doodads (which can't be edited once they are placed)<br>
+			int: special doodad format version set to '0'<br>
+			
+int: number "s" of "special" doodads ("special" like cliffs,...)<br>
+			
+Then "s" times a special doodad structure (16 bytes each):<br>
+			
+char[4]: doodad ID<br>
+			int: Z? (0)<br>
+			
+int: X? (w3e coordinates)<br>
+			
+int: Y? (w3e coordinates)<br>
+			<br>
+			<u>Item set format</u> (thx PitzerMike)<br>
+			int: number "n" of items in the item set<br>
+			then we have n times then following two values (for each item set)<br>
+			char[4]: item id (as in ItemData.slk)<br>
+			this can also be a random item id (see bottom of war3mapUnits.doo definition)<br>
+			int: percentual chance of choice<br>
+		</p>
+		<p>
+		</p>
+		<p>�<b><u> 8) "war3mapUnits.doo" The unit and item file</u></b></p>
+		<p>The file contains the definitions and positions of all placed units and items of the map.<br>
+Here is the Format:<br>
+			<u>Header</u>:<br>
+char[4]: file ID = "W3do"<br>
+int: file version = 7<br>int: subversion? (often set to [09 00 00 00]h)<br>int: number of  units and items defined<br>
+			<u>Data:</u><br>Each unit/item is defined by a block of bytes (variable length) organized like this:<br>
+			char[4]: type ID (iDNR = random item, uDNR =&nbsp;random unit) (thx PitzerMike)<br>
+			
+int: variation<br>
+float: coordinate X<br>
+float: coordinate Y<br>
+float: coordinate Z<br>
+float: rotation angle<br>
+float: scale X<br>
+float: scale Y<br>
+float: scale Z<br>
+byte: flags*<br>
+int: player number (owner) (player1 = 0, 16=neutral passive)<br>byte: unknown (0)<br>byte: unknown (0)<br>
+int: hit points (-1 = use default)<br>int: mana points (-1 = use default, 0 =&nbsp;unit doesn't have mana)<br>
+int: number "s" of dropped item sets<br>then we have s times a dropped item sets structures (see below)<br>
+			
+int: gold amount (default = 12500)<br>float: target acquisition (-1 =&nbsp;normal, -2 =&nbsp;camp)<br>int: hero level (set to1 for non hero units and items)<br>int: number "n" of items in the inventory<br>
+			then there is n times a inventory item structure (see below)<br>int: number "n" of modified abilities for this unit<br>
+			then there is n times a ability modification structure (see below)<br>
+			int: random unit/item flag "r" (for uDNR units and iDNR&nbsp;items)<br>
+			
+			0 = Any neutral passive building/item, in this case we have<br>
+			
+			  &nbsp;&nbsp;byte[3]: level of the random unit/item,-1 =&nbsp;any (this is actually interpreted as a 24-bit number)<br>
+			
+			  &nbsp;&nbsp;byte: item class of the random item, 0 =&nbsp;any, 1 = permanent ... (this is 0 for units)<br>
+			
+			  &nbsp;&nbsp;r is also 0 for non random units/items so we have these 4 bytes anyway (even if the id wasn't uDNR or iDNR)<br>
+			
+			
+			1 = random unit from random group (defined in the w3i), in this case we have<br>
+			
+			
+			  &nbsp;&nbsp;int: unit group number (which group from the global table)<br>
+			
+			
+			  &nbsp;&nbsp;int: position number (which column of this group)<br>
+			
+			
+			  &nbsp;&nbsp;the column should of course have the item flag set (in the w3i) if this is a random item<br>
+			
+			
+			2 = random unit from custom table, in this case we have<br>
+			
+			
+			  &nbsp;&nbsp;int: number "n" of different available units<br>
+			
+			
+			  &nbsp;&nbsp;then we have n times a random unit structure<br>
+			<br>
+			int: custom color (-1 = none, 0 = red, 1=blue,...)<br>int: Waygate: active destination number (-1 = deactivated, else it's the creation number of the target rect as in war3map.w3r)<br>
+			
+int: creation number<br>
+			
+*flags: may be similar to the war3map.doo flags<br>
+			<br>
+			<u>Dropped item set format</u><br>
+			
+int: number "d" of dropable items<br>
+			
+"d" times dropable items structures:<br>
+			
+char[4]: item ID ([00 00 00 00]h = none)<br>
+			this can also be a random item id (see below)<br>
+			
+			
+int: % chance to be dropped<br>
+			<br>
+			<u>Inventory item format</u> (thx PitzerMike)<br>
+			int: inventory slot (this is the actual slot - 1, so 1 =&gt; 0)<br>
+			char[4]: item id (as in ItemData.slk) 0x00000000 = none<br>
+			this can also be a random item id (see below)<br>
+			<br>
+			<u>Ability modification format</u>&nbsp;(thx PitzerMike)<br>
+			char[4]: ability id (as in AbilityData.slk)<br>
+			int: active for autocast abilities, 0 =&nbsp;no, 1 = active<br>
+			int: level for hero abilities<br>
+			<br>
+			<u>Random unit format</u> (thx PitzerMike)<br>
+			char[4]: unit id (as in UnitUI.slk)<br>
+			this can also be a random unit id (see below)<br>
+			int: percentual chance of choice<br>
+			<br>
+			<u>Random item ids</u> (thx PitzerMike)<br>
+			random item ids are of the type char[4] where the 1st letter is "Y" and the 3rd letter is "I"<br>
+			the 2nd letter narrows it down to items of a certain item types<br>
+			"Y" = any type<br>
+			"i" to "o" =&nbsp;item of this type, the letters are in order of the item types in the dropdown box ("i" = charged)<br>
+			the 4th letter narrows it down to items of a certain level<br>
+			"/" =&nbsp;any level (ASCII 47)<br>
+			"0" ... =&nbsp;specific level (this is ASCII 48 + level, so level 10 will be ":" and level 15 will be "?" and so on)<br>
+			<br>
+			<u>Random unit ids</u> (thx PitzerMike)<br>
+			random unit ids are of the type char[4] where the 1st three letters are "YYU"<br>
+			the 4th letter narrows it down to units of a certain level<br>
+			"/" =&nbsp;any level (ASCII 47)<br>
+			"0" ... =&nbsp;specific level (this is ASCII 48 + level, so level 10 will be ":" and level 15 will be "?" and so on)<br>
+			<br>
+		</p>
+		<p><font color="#800000"><u><b>NEW "Frozen Throne expansion pack beta" format (thx PitzerMike):<br>
+						<br>
+					</b></u></font><u>Header</u>:<br>
+			
+char[4]: file ID = "W3do"<br>
+			int: file version = 8<br>
+			int: subversion? (often set to [0B 00 00 00]h)<br>
+			int: number of  units and items defined<br>
+			<u>Data:</u><br>
+			Each unit/item is defined by a block of bytes (variable length) organized like this:<br>
+			
+			char[4]: type ID (iDNR = random item, uDNR =&nbsp;random unit) (thx PitzerMike)<br>
+			
+			
+int: variation<br>
+			
+float: coordinate X<br>
+			
+float: coordinate Y<br>
+			
+float: coordinate Z<br>
+			
+float: rotation angle<br>
+			
+float: scale X<br>
+			
+float: scale Y<br>
+			
+float: scale Z<br>
+			
+byte: flags*<br>
+			
+int: player number (owner) (player1 = 0, 16=neutral passive)<br>
+			byte: unknown (0)<br>
+			byte: unknown (0)<br>
+			
+int: hit points (-1 = use default)<br>
+			int: mana points (-1 = use default, 0 =&nbsp;unit doesn't have mana)<br>
+			int: map item table pointer (for dropped items on death)<br>
+			if -1 =&gt;&nbsp;no item table used<br>
+			if &gt;= 0 =&gt; the item table with this number will be dropped on death<br>
+			int: number "s" of dropped item sets (can only be greater 0 if the item table pointer was -1)<br>
+			then we have s times a dropped item sets structures (see below)<br>
+			
+			
+int: gold amount (default = 12500)<br>
+			float: target acquisition (-1 =&nbsp;normal, -2 =&nbsp;camp)<br>
+			int: hero level (set to1 for non hero units and items)<br>
+			int: strength of the hero&nbsp;(0 =&nbsp;use default)<br>
+			int: agility of the hero (0 = use default)<br>
+			int: intelligence of the hero (0 =&nbsp;use default)<br>
+			int: number "n" of items in the inventory<br>
+			
+			then there is n times a inventory item structure (see below)<br>
+			int: number "n" of modified abilities for this unit<br>
+			
+			then there is n times a ability modification structure (see below)<br>
+			
+			int: random unit/item flag "r" (for uDNR units and iDNR&nbsp;items)<br>
+			0 = Any neutral passive building/item, in this case we have<br>
+			  &nbsp;&nbsp;byte[3]: level of the random unit/item,-1 =&nbsp;any (this is actually interpreted as a 24-bit number)<br>
+			  &nbsp;&nbsp;byte: item class of the random item, 0 =&nbsp;any, 1 = permanent ... (this is 0 for units)<br>
+			  &nbsp;&nbsp;r is also 0 for non random units/items so we have these 4 bytes anyway (even if the id wasn't uDNR or iDNR)<br>
+			
+			1 = random unit from random group (defined in the w3i), in this case we have<br>
+			
+			  &nbsp;&nbsp;int: unit group number (which group from the global table)<br>
+			
+			  &nbsp;&nbsp;int: position number (which column of this group)<br>
+			
+			  &nbsp;&nbsp;the column should of course have the item flag set (in the w3i) if this is a random item<br>
+			
+			2 = random unit from custom table, in this case we have<br>
+			
+			  &nbsp;&nbsp;int: number "n" of different available units<br>
+			
+			  &nbsp;&nbsp;then we have n times a random unit structure<br>
+			<br>
+			
+			int: custom color (-1 = none, 0 = red, 1=blue,...)<br>
+			int: Waygate: active destination number (-1 = deactivated, else it's 
+the creation number of the target rect as in war3map.w3r)<br>
+			
+			
+int: creation number<br>
+			
+			
+*flags: may be similar to the war3map.doo flags<br>
+			<br>
+			<u>Dropped item set format</u><br>
+			
+			
+int: number "d" of dropable items<br>
+			
+			
+"d" times dropable items structures:<br>
+			
+			
+char[4]: item ID ([00 00 00 00]h = none)<br>
+			this can also be a random item id (see below)<br>
+			
+			
+int: % chance to be dropped<br>
+			<br>
+			<u>Inventory item format</u> (thx PitzerMike)<br>
+			int: inventory slot (this is the actual slot - 1, so 1 =&gt; 0)<br>
+			char[4]: item id (as in ItemData.slk) 0x00000000 = none<br>
+			this can also be a random item id (see below)<br>
+			<br>
+			<u>Ability modification format</u>&nbsp;(thx PitzerMike)<br>
+			char[4]: ability id (as in AbilityData.slk)<br>
+			int: active for autocast abilities, 0 =&nbsp;no, 1 = active<br>
+			int: level for hero abilities<br>
+			<br>
+			<u>Random unit format</u> (thx PitzerMike)<br>
+			char[4]: unit id (as in UnitUI.slk)<br>
+			this can also be a random unit id (see below)<br>
+			int: percentual chance of choice<br>
+			<br>
+			<u>Random item ids</u> (thx PitzerMike)<br>
+			random item ids are of the type char[4] where the 1st letter is "Y" and the 3rd letter is "I"<br>
+			the 2nd letter narrows it down to items of a certain item types<br>
+			"Y" = any type<br>
+			"i" to "o" =&nbsp;item of this type, the letters are in order of the item types in the dropdown box ("i" = charged)<br>
+			the 4th letter narrows it down to items of a certain level<br>
+			"/" =&nbsp;any level (ASCII 47)<br>
+			"0" ... =&nbsp;specific level (this is ASCII 48 + level, so level 10 will be ":" and level 15 will be "?" and so on)<br>
+			<br>
+			<u>Random unit ids</u> (thx PitzerMike)<br>
+			random unit ids are of the type char[4] where the 1st three letters are "YYU"<br>
+			the 4th letter narrows it down to units of a certain level<br>
+			"/" =&nbsp;any level (ASCII 47)<br>
+			"0" ... =&nbsp;specific level (this is ASCII 48 + level, so level 10 will be ":" and level 15 will be "?" and so on)<br>
+		</p>
+		<p></p>
+		<p><u><b>
+9) "war3map.w3i" The info
+file</b></u></p>
+		<p>
+It contains some of the info displayed when you start a game.<br>
+<br>
+Format:<br>
+int: file format version = 18<br>
+int: number of saves (map version)<br>
+int: editor version (little endian)<br>
+String: map name<br>
+String: map author<br>
+String: map description<br>
+String: players recommended<br>
+float[8]: "Camera Bounds" as defined in the JASS file<br>
+int[4]: camera bounds complements* (see note 1) (ints A, B, C and D)<br>
+int: map playable area width E* (see note 1)<br>
+int: map playable area height F* (see note 1)<br>
+�� <u>*note 1</u>:<br>
+�� map width = A + E + B<br>
+�� map height = C + F + D<br>
+int: flags<br>
+�� 0x0001: 1=hide minimap in preview screens<br>
+�� 0x0002: 1=modify ally priorities<br>
+�� 0x0004: 1=melee map<br>
+�� 0x0008: 1=playable map size was large and has never been reduced to medium (?)<br>
+�� 0x0010: 1=masked area are partially visible<br>
+�� 0x0020: 1=fixed player setting for custom forces<br>
+�� 0x0040: 1=use custom forces<br>
+�� 0x0080: 1=use custom techtree<br>
+�� 0x0100: 1=use custom abilities<br>
+�� 0x0200: 1=use custom upgrades<br>
+�� 0x0400: 1=map properties menu opened at least once since map creation (?)<br>
+�� 0x0800: 1=show water waves on cliff shores<br>
+�� 0x1000: 1=show water waves on rolling shores<br>
+			char: map main ground type<br>
+			   Example: 'A'= Ashenvale, 'X' = City Dalaran<br>
+			
+int: Campaign background number (-1 = none)<br>
+			
+String: Map loading screen text<br>
+			
+String: Map loading screen title<br>
+			
+String: Map loading screen subtitle<br>
+			
+int: Map loading screen number (-1 = none)<br>
+			
+String: Prologue screen text<br>
+			
+String: Prologue screen title<br>
+			
+String: Prologue screen subtitle<br>
+			int: max number "MAXPL" of players<br>
+			array of structures: then, there is MAXPL times a player data like described below.<br>
+			int: max number "MAXFC" of forces<br>
+			array of structures: then, there is MAXFC times a force data like described below.<br>
+			int: number "UCOUNT" of upgrade availability changes<br>
+			array of structures: then, there is UCOUNT times a upgrade availability change like described below.<br>
+			int: number "TCOUNT" of tech availability changes (units, items, abilities)<br>
+			array of structures: then, there is TCOUNT times a tech availability change like described below<br>
+			int: number "UTCOUNT" of random unit tables<br>
+			array of structures: then, there is UTCOUNT times a unit table like described below<br>
+			<br>
+			<u>
+Players data format:<br>
+			</u>int: internal player number<br>
+			
+			
+			
+int: player type<br>
+			
+			
+			
+�� 1=Human, 2=Computer, 3=Neutral, 4=Rescuable<br>
+			
+			
+			
+int: player race<br>
+			
+			
+			
+�� 1=Human, 2=Orc, 3=Undead, 4=Night Elf<br>
+			
+			
+			
+int: 00000001 = fixed start position<br>
+			
+			
+			
+String: Player name<br>
+			
+			
+			
+float: Starting coordinate X<br>
+			
+			
+			
+float: Starting coordinate Y<br>
+			
+			
+			
+int: ally low priorities flags (bit "x"=1 --&gt; set for player
+"x")<br>
+			
+			
+			
+int: ally high priorities flags (bit "x"=1 --&gt; set for player
+"x")<br>
+			<br>
+			<u>Forces data format:</u> (thx Soar)<u><br>
+			</u>int: Foces Flags<u><br>
+			</u>0x00000001: allied (force 1)<br>
+			
+			0x00000002: allied victory<br>
+			
+			0x00000004: share vision<br>
+			
+			0x00000010: share unit control<br>
+			
+			0x00000020: share advanced unit control<br>
+			
+			int: player masks (bit "x"=1 --&gt; player "x" is in this force)<br>
+			
+			String: Force name<br>
+			<br>
+			<u>Upgrade availability change format</u> (thx&nbsp;PitzerMike)<br>
+			int: Player Flags (bit "x"=1 if this change applies for player "x")<br>
+			char[4]: upgrade id (as in UpgradeData.slk)<br>
+			int: Level of the upgrade for which the availability is changed (this is actually the level - 1, so 1 =&gt; 0)<br>
+			int Availability (0 = unavailable, 1 =&nbsp;available, 2 =&nbsp;researched)<br>
+			<br>
+			<u>Tech availability change format</u> (thx PitzerMike)<br>
+			int: Player Flags (bit "x"=1 if this change applies for player "x")<br>
+			char[4]: tech id (this can be an item, unit or ability)<br>
+			there's no need for an availability value, if a tech-id is in this list, it means that it's not available<br>
+			<br>
+			<u>Random unit table format</u> (thx PitzerMike)<br>
+			int: Number "n" of random groups<br>
+			then follows n times the following data (for each group)<br>
+			int: Group number<br>
+			string: Group name<br>
+			int: Number "m" of  positions<br>
+			positions are the table columns where you can enter the unit/item 
+ids, all units in the same line have the same chance, but belong to 
+different "sets" of the random group, called positions here<br>
+			int[m]: for each positon is specified if it's a unit table (=0), a building table (=1) or an item table (=2)<br>
+			int: Number "i" of units/items, this is the number of lines in the table, each position can have that many or fewer entries<br>
+			now there's "i" times the following structure (for each line)<br>
+			int: Chance of the unit/item (percentage)<br>
+			char[m *&nbsp;4]: for each position are the unit/item id's for this line specified<br>
+			this can also be random unit/item ids (see bottom of war3mapUnits.doo definition)<br>
+			a unit/item id of 0x00000000 indicates that no unit/item is created<br>
+			<br>
+		</p>
+		<p><b><u><font color="#800000">NEW  Frozen Throne expansion pack format:<br>
+					</font></u></b>int: file format version = <font color="black">25</font><font color="#ff0000"><br>
+			</font>int: number of saves (map version)<br>
+			
+int: editor version (little endian)<br>
+			
+String: map name<br>
+			
+String: map author<br>
+			
+String: map description<br>
+			
+String: players recommended<br>
+			
+float[8]: "Camera Bounds" as defined in the JASS file<br>
+			
+int[4]: camera bounds complements* (see note 1) (ints A, B, C and D)<br>
+			
+int: map playable area width E* (see note 1)<br>
+			
+int: map playable area height F* (see note 1)<br>
+			
+�� <u>*note 1</u>:<br>
+			
+�� map width = A + E + B<br>
+			
+�� map height = C + F + D<br>
+			
+int: flags<br>
+			
+�� 0x0001: 1=hide minimap in preview screens<br>
+			
+�� 0x0002: 1=modify ally priorities<br>
+			
+�� 0x0004: 1=melee map<br>
+			
+�� 0x0008: 1=playable map size was large and has never been reduced to medium (?)<br>
+			
+�� 0x0010: 1=masked area are partially visible<br>
+			
+�� 0x0020: 1=fixed player setting for custom forces<br>
+			
+�� 0x0040: 1=use custom forces<br>
+			
+�� 0x0080: 1=use custom techtree<br>
+			
+�� 0x0100: 1=use custom abilities<br>
+			
+�� 0x0200: 1=use custom upgrades<br>
+			
+�� 0x0400: 1=map properties menu opened at least once since map creation (?)<br>
+			
+�� 0x0800: 1=show water waves on cliff shores<br>
+			
+�� 0x1000: 1=show water waves on rolling shores<br>
+			
+�� 0x2000: 1=unknown<br>
+			
+�� 0x4000: 1=unknown<br>
+			
+�� 0x8000: 1=unknown<br>
+			
+char: map main ground type<br>
+			
+�� Example: 'A'= Ashenvale, 'X' = City Dalaran<br>
+			
+			int: Loading screen background number which is its index in the preset list (-1 = none or custom imported file)<br>
+			
+			String: path of custom loading screen model (empty string if none or preset)<br>
+			
+			String: Map loading screen text<br>
+			
+			String: Map loading screen title<br>
+			
+			String: Map loading screen subtitle<br>
+			
+			int: used game data set (index in the preset list, 0 = standard)<br>
+			
+			String: Prologue screen path (usually empty)<br>
+			
+			String: Prologue screen text (usually empty)<br>
+			
+			String: Prologue screen title (usually empty)<br>
+			
+			String: Prologue screen subtitle (usually empty)<br>
+			
+			int: uses terrain fog (0 = not used, greater 0 = index of terrain fog style dropdown box)<br>
+			
+			float: fog start z height<br>
+			
+			float: fog end z height<br>
+			
+			float: fog density<br>
+			
+			byte: fog red value<br>
+			
+			byte: fog green value<br>
+			
+			byte: fog blue value<br>
+			
+			byte: fog alpha value<br>
+			
+			int: global weather id (0 = none, else it's set to the 4-letter-id of the desired weather found in TerrainArt\Weather.slk)<br>
+			
+			String: custom sound environment (set to the desired sound lable)<br>
+			
+			char: tileset id of the used custom light environment<br>
+			
+			byte: custom water tinting red value<br>
+			
+			byte: custom water tinting green value<br>
+			
+			byte: custom water tinting blue value<br>
+			
+			byte: custom water tinting alpha value<br>
+			int: max number "MAXPL" of players<br>
+			array of structures: then, there is MAXPL times a player data like described below.<br>
+			int: max number "MAXFC" of forces<br>
+			array of structures: then, there is MAXFC times a force data like described below.<br>
+			int: number "UCOUNT" of upgrade availability changes<br>
+			array of structures: then, there is UCOUNT times a upgrade availability change like described below.<br>
+			int: number "TCOUNT" of tech availability changes (units, items, abilities)<br>
+			array of structures: then, there is TCOUNT times a tech availability change like described below<br>
+			int: number "UTCOUNT" of random unit tables<br>
+			array of structures: then, there is UTCOUNT times a unit table like described below<br>
+			int: number "ITCOUNT" of random item tables<br>
+			array of structures: then, there is ITCOUNT&nbsp;times a item table like described below<br>
+			<br>
+			<u>
+Players data format:<br>
+			</u>int: internal player number<br>
+			
+int: player type<br>
+			
+�� 1=Human, 2=Computer, 3=Neutral, 4=Rescuable<br>
+			
+int: player race<br>
+			
+�� 1=Human, 2=Orc, 3=Undead, 4=Night Elf<br>
+			
+int: 00000001 = fixed start position<br>
+			
+String: Player name<br>
+			
+float: Starting coordinate X<br>
+			
+float: Starting coordinate Y<br>
+			
+int: ally low priorities flags (bit "x"=1 --&gt; set for player
+"x")<br>
+			
+int: ally high priorities flags (bit "x"=1 --&gt; set for player
+"x")<br>
+			<br>
+			<u>Forces data format:</u> (thx Soar)<u><br>
+			</u>int: Foces Flags<u><br>
+			</u>0x00000001: allied (force 1)<br>
+			0x00000002: allied victory<br>
+			0x00000004: share vision<br>
+			0x00000010: share unit control<br>
+			0x00000020: share advanced unit control<br>
+			int: player masks (bit "x"=1 --&gt; player "x" is in this force)<br>
+			String: Force name<br>
+			<br>
+			<u>Upgrade availability change format</u> (thx&nbsp;PitzerMike)<br>
+			int: Player Flags (bit "x"=1 if this change applies for player "x")<br>
+			char[4]: upgrade id (as in UpgradeData.slk)<br>
+			int: Level of the upgrade for which the availability is changed (this is actually the level - 1, so 1 =&gt; 0)<br>
+			int Availability (0 = unavailable, 1 =&nbsp;available, 2 =&nbsp;researched)<br>
+			<br>
+			<u>Tech availability change format</u> (thx PitzerMike)<br>
+			int: Player Flags (bit "x"=1 if this change applies for player "x")<br>
+			char[4]: tech id (this can be an item, unit or ability)<br>
+			there's no need for an availability value, if a tech-id is in this list, it means that it's not available<br>
+			<br>
+			<u>Random unit table format</u> (thx PitzerMike)<br>
+			int: Number "n" of random groups<br>
+			then we have n times the following data (for each group)<br>
+			int: Group number<br>
+			string: Group name<br>
+			int: Number "m" of  positions<br>
+			positions are the table columns where you can enter the unit/item 
+ids, all units in the same line have the same chance, but belong to 
+different "sets" of the random group, called positions here<br>
+			int[m]: for each positon is specified if it's a unit table (=0), a building table (=1) or an item table (=2)<br>
+			int: Number "i" of units/items, this is the number of lines in the table, each position can have that many or fewer entries<br>
+			now there's "i" times the following structure (for each line)<br>
+			int: Chance of the unit/item (percentage)<br>
+			char[m *&nbsp;4]: for each position are the unit/item id's for this line specified<br>
+			this can also be a random unit/item ids (see bottom of war3mapUnits.doo definition)<br>
+			a unit/item id of 0x00000000 indicates that no unit/item is created<br>
+			<br>
+			<u>Random item table format</u> (thx PitzerMike)<br>
+			int: Number "n" of random item tables<br>
+			then we have n times the following data (for each item table)<br>
+			int: Table number<br>
+			string: Table name<br>
+			int: Number "m" of  item sets on the current item table<br>
+			then we have m times the following data (for each item set)<br>
+			int: Number "i" of items on the current item set<br>
+			then we have i times the following two values&nbsp;(for each item)<br>
+			int: Percentual chance<br>
+			char[4]: Item id (as in ItemData.slk)<br>
+			this can also be a random item id (see bottom of war3mapUnits.doo definition)<br>
+			
+			
+�</p>
+		<p><u><b>
+10) "war3map.wts" The trigger
+string data file</b></u></p>
+		<p>
+Open it with notepad and you'll figure out how it works. Each trigger
+string is defined by a number (trigger ID) and a value for this
+number. When Warcraft meets a "TRIGSTR_***" (where "***" is supposed
+to be a number), it will look in the trigger string table to find the
+corresponding string and replace the trigger string by that
+value. The value for a specific trigger ID is set only once by the
+first definition
+encountered for this ID: if you have two times the trigger string 0
+defined, only the first one will count.
+The number following "STRING " must be positive: any negative number
+will be ignored. If text follows "STRING ", it'll be considered as
+number 0.<br>
+<br>
+String definition:<br>
+It always start with "STRING " followed by the trigger string ID number
+which is supposed to be different for each trigger string. Then "{" indicates the begining of the string value
+followed by a string which can contain several lines and "}" that indicates the end of the trigger string definition.<br>
+<br>
+Example:<br>
+in the .WTS file you have:<br>
+<br>
+STRING 0<br>
+{<br>
+Blah blah blah...<br>
+}<br>
+<br>Then either in the .J, in the .W3I or in one of the object editor
+files, Warcraft finds a TRIGSTR_000, it'll look in the table for<br>trigger string number 0 and it'll find that the value to use is "Blah blah blah" instead of "TRIGSTR_000". <br>
+			If there are more than 999 strings another the reference simply becomes one character longer.<br>
+</p>
+		<p></p>
+		<p><u><b>
+11) "war3mapMap.blp" the
+minimap image (with the help of BlacKDicK)</b></u></p>
+		<p>
+The BLP file contain the JPEG header and the JPEG raw data separated.<br>
+BLP stands for "Blip" file which I guess is a "BLIzzard
+Picture".<br>
+			There are two types of BLPs:<br>
+			- JPG-BLPs:�use JPG compression<br>- Paletted BLPs:&nbsp;use palettes and 1 or 2 bytes per pixel depending</p>
+		<p>The general format of JPG-BLPs:</p>
+		<p>
+Header:<br>
+			
+char[4]: file ID ("BLP1")<br>
+			int: 0 for JPG-BLP, 1 for Paletted<br>
+			
+int: 0x00000008 = has alpha, 0x00000000 = no alpha<br>
+			
+int: image width<br>
+			
+int: image height<br>int: flag for alpha channel and team c<font face="Times New Roman,Georgia,Times">olors </font>(usually 3, 4 or 5), 3 and 4 means color and alpha information for paletted files, <br>
+			5 means only color information, if &gt;=5 on 'unit' textures, it won't show the team color.<br>
+			
+			
+int: always 0x00000001, if 0x00000000 the model that uses this texture will be 
+messy.<br>
+			int[16]: mipmap offset (offset from the begining of the file)<br>
+			int[16]: mipmap size (size of mipmaps)<br>
+			<br>
+			<u>If it's a JPG-BLP we go on with:</u><br>
+			int: jpg header size (header size) "h" (usually 0x00000270)<br>
+			
+			
+byte[h]: header<br>
+			
+followed by 0 bytes until the begining of the jpeg data, we can safely
+erase these 0 bytes if we fix the mipmap offset specified above<br>
+			byte[16, mipmap size]: starting from each of the 16 mipmap offset 
+addresses we read 'mipmap size' bytes raw jpeg data till the end of the 
+file, having the header and the mipmap data we can process the picture 
+like ordinary JPG files<br>
+			<br>
+			<u>If it's a paletted BLP we go here:</u><br>
+			byte[4, 255]: the BGRA palette defining 256 colors by their BGRA values, each 1 byte<br>
+			byte[width x height]: the ColorIndex of each pixel from top left to 
+bottom right, ColorIndex refers to the above defined color palette<br>
+			byte[width x height]: the AlphaIndex of each pixel on a standard 
+greyscale palette for the alpha channel, where 0 is fully transparent 
+and 255 is opaque,<br>
+			if the picturetype flag is set to 5, the image doesn't have an alpha channel, so this section will be omitted</p>
+		<p>More detailed blp specs by Magos: <a href="http://magos.thejefffiles.com/War3ModelEditor/">http://magos.thejefffiles.com/War3ModelEditor/</a></p>
+		<p></p>
+		<p><u><b>
+12) "war3map.mmp" The menu
+minimap</b></u></p>
+		<p>
+Header:<br>
+int: unknown (usually 0, maybe the file format)<br>
+int: number of datasets<br>
+<br>
+Data:<br>
+The size of a dataset is 16 bytes.<br>
+int: icon type<br>
+�� Icons Types:<br>
+����� 00: gold mine<br>
+����� 01: house<br>
+����� 02: player start (cross)<br>
+int: X coordinate of the icon on the map<br>
+int: Y coordinate of the icon on the map<br>
+�� Map Coordinates:<br>
+����� top left: 10h, 10h<br>
+����� center: 80h, 80h<br>
+����� bottom right: F0h, F0h<br>
+byte[4]: player icon color<br>
+�� Player Colors (BB GG RR AA = blue, green, red, alpha channel):<br>
+����� 03 03 FF FF : red<br>
+����� FF 42 00 FF : blue<br>
+����� B9 E6 1C FF : cyan<br>
+����� 81 00 54 FF : purple<br>
+����� 00 FC FF FF : yellow<br>
+����� 0E 8A FE FF : orange<br>
+����� 00 C0 20 FF : green<br>
+����� B0 5B E5 FF : pink<br>
+����� 97 96 95 FF : light gray<br>
+����� F1 BF 7E FF : light blue<br>
+����� 46 62 10 FF : aqua<br>
+����� 04 2A 49 FF : brow<br>
+����� FF FF FF FF : none<br>
+</p>
+		<p></p>
+		<p><u><b>
+13) "war3map.w3u" The custom
+units file</b></u></p>
+<p>
+Most of the W3U File specifications is from BlacKDicK.<br>
+W3U files have a initial long and then comes two tables. Both look the same.<br>
+First table is original units table (Original Blizzard Units).<br>
+Second table is user-created units table (Units created by the map designer).<br>
+<br>
+Header:<br>
+int: W3U Version = 1<br>
+<i>x</i> bytes: Original Units table*<br>
+<i>y</i> bytes: User-created units table*<br>
+<br>
+Data:<br>
+<u>
+*Table definition:<br>
+</u>
+int: number <i>n</i> of units on this table.<br>
+If 0 on original table, then skip default unit table. This is the number of
+following units. Even if we don't have any changes on original table, this value must be there.<br>
+<i>n</i> times a unit definition structure*.<br>
+<br>
+<u>
+*Unit definition structure:<br>
+</u>
+char[4]: original unit ID (get the IDs from "<i>Units\UnitData.slk</i>" of
+<i>war3.mpq</i>)<br>
+char[4]: new unit ID. If it is on original table, this is 0, since it isn't
+used.<br>
+int: number <i>m</i> of modifications for this unit<br>
+<i>m</i> times a modification structure*<br>
+<br>
+<u>
+*Modification structure:<br>
+</u>
+char[4] modification ID code (get the IDs from
+"<i>Units\UnitMetaData.slk</i>" of <i>war3.mpq</i>)<br>
+int: variable type* <i>t</i> (0=int, 1=real, 2=unreal, 3=String,...)<br>
+<i>t</i> type: value (length depends on the type <i>t</i> specified
+before)<br>
+int: end of unit definition (usually 0)<br>
+<br>
+<u>
+*Variable types:<br>
+</u>
+0=int<br>
+1=real<br>
+2=unreal<br>
+3=string<br>
+4=bool<br>
+5=char<br>
+6=unitList<br>
+7=itemList<br>
+8=regenType<br>
+9=attackType<br>
+10=weaponType<br>
+11=targetType<br>
+12=moveType<br>
+13=defenseType<br>
+14=pathingTexture<br>
+15=upgradeList<br>
+16=stringList<br>
+17=abilityList<br>
+18=heroAbilityList<br>
+19=missileArt<br>
+20=attributeType<br>
+21=attackBits<br>
+</p>
+		<p><b><u><font color="#800000">NEW Frozen Throne expansion pack
+format of "war3map.w3u / w3t / w3b / w3d / w3a / w3h / w3q" The object
+data files (thanks PitzerMike):<br>
+					</font></u></b></p>
+		<p>These are the files that store the changes you make in the object editor.<br>
+			They all have one format in common. They have an initial int and then there are 2 tables<br>
+			Both look the same. The first table is the original table (Standard Objects by Blizzard).<br>
+			The second table contains the user created objects (Custom units / items / abilities …)<br>
+		</p>
+		<p>Header:<br>
+			int: File Version = (usually 1)<br>
+			x bytes: Original objects table*<br>
+			y bytes: Custom objects table*<br>
+		</p>
+		<p>Data:<br>
+			*Table definition:<br>
+int: number n of objects on this table, if 0 on the original table,
+then skip the default object table. This is the number of following
+units. Even if we don't have any changes on original table, this value
+must be there.<br>
+			n times a object definition structure*.<br>
+		</p>
+		<p>*Object definition structure:<br>
+			char[4]: original object ID (see table at the bottom where you can get the object IDs*)<br>
+			char[4]: new object ID. (if it is on original table, this is 0, since it isn't used)<br>
+			int: number m of modifications for this object<br>
+			m times a modification structure*<br>
+		</p>
+		<p>*Modification structure:<br>
+			char[4] modification ID (see the table at the bottom where you can get the mod IDs*)<br>
+			int: variable type* t<br>[int: level/variation (this integer is only 
+used by some object files depending on the object type, for example the 
+units file doesn’t use this additional integer, but the ability file 
+does, see the table at the bottom to see which object files use this 
+int*)  in the ability and upgrade file this is the level of the 
+ability/upgrade, in the doodads file this is the variation, set to 0 if 
+the object doesn't have more than one level/variation]<br>[int: data 
+pointer (again this int is only used by those object files that also use
+ the level/variation int, see table*) in reality this is only used in 
+the ability file for values that are originally stored in one of the 
+Data columns in AbilityData.slk, this int tells the game to which of 
+those columns the value resolves (0 = A, 1 =&nbsp;B, 2 =&nbsp;C, 3 = D, 4
+ =&nbsp;F, 5 =&nbsp;G, 6 = H), for example if the change applies to the 
+column DataA3 the level int will be set to 3 and the data pointer to 0]<br>
+			int, float or string: value of the modification depending on the variable type specified by t<br>
+int: end of modification structure (this is either 0, or equal to the
+original object ID or equal to the new object ID of the current object,
+when reading files you can use this to check if the format is correct,
+when writing a file you should use the new object ID of the current
+object here)<br>
+		</p>
+		<p>*Variable types:<br>
+		</p>
+		<table width="613" cellpadding="2" bordercolor="#000000" border="1">
+			<tbody><tr>
+				<td width="50%"><b>Value</b></td>
+				<td width="50%"><b>Variable Type</b></td>
+				<td width="50%" nowrap="nowrap"><b>Value Format</b></td>
+			</tr>
+			<tr>
+				<td width="50%">0</td>
+				<td width="50%">Integer</td>
+				<td width="50%" nowrap="nowrap">int</td>
+			</tr>
+			<tr>
+				<td width="50%">1</td>
+				<td width="50%">Real</td>
+				<td width="50%" nowrap="nowrap">float (single precision)</td>
+			</tr>
+			<tr>
+				<td width="50%">2</td>
+				<td width="50%">Unreal (0 &lt;= val &lt;= 1)</td>
+				<td width="50%" nowrap="nowrap">float (single Precision)</td>
+			</tr>
+			<tr>
+				<td width="50%">3</td>
+				<td width="50%">String</td>
+				<td width="50%" nowrap="nowrap">string (null terminated)</td>
+			</tr>
+		</tbody></table>
+		<p>*Object data files:<br>
+		</p>
+		<p>This table shows where to get the object IDs and the modification 
+IDs and if the files use the 2 additional level and data pointer 
+integers.<br>
+		</p>
+		<table width="704" cellpadding="2" bordercolor="#000000" border="1">
+			<tbody><tr>
+				<td width="50%"><b>Extension</b></td>
+				<td width="50%"><b>Object Type</b></td>
+				<td width="50%"><b>Object IDs</b></td>
+				<td width="50%"><b>Mod IDs</b></td>
+				<td width="130"><b>Uses Optional Ints</b></td>
+			</tr>
+			<tr>
+				<td width="50%">w3u</td>
+				<td width="50%">Units</td>
+				<td width="50%">Units\UnitData.slk</td>
+				<td width="50%">Units\UnitMetaData.slk</td>
+				<td width="130">No</td>
+			</tr>
+			<tr>
+				<td width="50%">w3t</td>
+				<td width="50%">Items</td>
+				<td width="50%">Units\ItemData.slk</td>
+				<td width="50%">Units\UnitMetaData.slk<br>
+					(those where useItem = 1)</td>
+				<td width="130">No</td>
+			</tr>
+			<tr>
+				<td width="50%">w3b</td>
+				<td width="50%">Destructables</td>
+				<td width="50%">Units\DestructableData.slk</td>
+				<td width="50%">Units\DestructableMetaData.slk</td>
+				<td width="130">No</td>
+			</tr>
+			<tr>
+				<td width="50%">w3d</td>
+				<td width="50%">Doodads</td>
+				<td width="50%">Doodads\Doodads.slk</td>
+				<td width="50%">Doodads\DoodadMetaData.slk</td>
+				<td width="130">Yes</td>
+			</tr>
+			<tr>
+				<td width="50%">w3a</td>
+				<td width="50%">Abilities</td>
+				<td width="50%">Units\AbilityData.slk</td>
+				<td width="50%">Units\AbilityMetaData.slk</td>
+				<td width="130">Yes</td>
+			</tr>
+			<tr>
+				<td width="50%">w3h</td>
+				<td width="50%">Buffs</td>
+				<td width="50%">Units\AbilityBuffData.slk</td>
+				<td width="50%">Units\AbilityBuffMetaData.slk</td>
+				<td width="130">No</td>
+			</tr>
+			<tr>
+				<td width="50%">w3q</td>
+				<td width="50%">Upgrades</td>
+				<td width="50%">Units\UpgradeData.slk</td>
+				<td width="50%">Units\UpgradeMetaData.slk</td>
+				<td width="130">Yes</td>
+			</tr>
+		</tbody></table>
+		<p>Note:
+These files can also be found in campaign archives with the exactly
+same format but named war3campaign.w3u / w3t / w3b / w3d / w3a / w3h /
+w3q</p>
+		<p><b><u><font color="#800000">NEW Frozen Throne expansion pack format of "*w3o" object editor files (thanks PitzerMike):<br>
+					</font></u></b></p>
+		<p>The
+w3o is a collection of all above mentioned object editor files compiled
+in one single file. You get such a file if you export all object data
+in the object editor. It can be selected in the world editor as
+external data source in the map properties dialog, therefore it has to
+be in the same folder as the map that should use the file.</p>
+		<p>Format:<br>
+			int: file version (currently 1)<br>
+			int: contains unit data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3u file (see w3u specifications above)<br>
+			int: contains item data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3t file (see w3t specifications above)<br>
+			int: contains destructable data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3b file (see w3b specifications above)<br>
+			int: contains doodad data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3d file (see w3d specifications above)<br>
+			int: contains ability data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3a file (see w3a specifications above)<br>
+			int: contains buff data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3h file (see w3h specifications above)<br>
+			int: contains upgrade data file (1 = yes, 0 = no)<br>
+			  if yes, then here follows a complete w3q file (see w3q specifications above)<br>
+		</p>
+		<p></p>
+		<p><u><b>14) "war3map.wtg" The
+triggers names file</b></u></p>
+		<p>
+Header:<br>
+char[4]: file ID (WTG!)<br>
+int: wtg file format version = 4<br>
+int: number "a" of triggers categories<br>
+"a" times a category definition structure*<br>
+int: number "b" ???<br>
+int: number "c" of variables<br>
+"c" times a variable definition structure**<br>
+int: number "d" of triggers<br>
+"d" times a trigger definition structure***<br>
+<br>
+*Category Definition Structure:<br>
+int: category index<br>
+String: category name<br>
+<br>
+**Variable Definition Structure:<br>
+String: variable name<br>
+String: variable type<br>
+int: number "e" ???<br>
+int: array status: 0=not an array, 1=array<br>
+int: initialisation status: 0=not initialized, 1=initialized<br>
+String: initial value (string)<br>
+<br>
+***Triggers Definiton Structure:<br>
+String: trigger name<br>
+String: trigger description<br>
+int: enable state: 0=disabled, 1=enabled<br>
+int: custom text trigger state: 0=not a custom text trigger, 1=custom text
+trigger (use data in the WCT)<br>
+int: initial state: 0=initially on, 1=not initially on<br>
+int: ???<br>
+int: index of the category the trigger belongs to<br>
+int: number "i" of event-condition-action (ECA) function<br>
+"i" times an ECA function definition structure*(4) (if it's a custom
+text trigger i should be 0 so we don't have<br>
+<br>
+this section)<br>
+<br>
+*(4)ECA function definition structure<br>
+int: function type: 0=event, 1=condition, 2=action<br>
+String: function name<br>
+int: enable state: 0=function disabled, 1=function enabled<br>
+"x" times a parameter structure*(5). x depends of the function and is
+hardcoded.<br>
+<br>
+*(5)Parameters Structure:<br>
+int: 0=preset, 1=variable, 2=function<br>
+String: parameter value<br>
+int: ???<br>
+int: ???<br>
+</p>
+<p><font color="#800000"><u><b>NEW  Frozen Throne expansion pack format (thanks Ziutek):<br>
+</b></u></font></p>
+		<p>Header:<br>
+			
+char[4]: file ID (WTG!)<br>
+			
+int: wtg file format version = 7<br>
+			
+int: number "a" of triggers categories<br>
+			
+"a" times a category definition structure*<br>
+			
+int: number "b" ???<br>
+			
+int: number "c" of variables<br>
+			
+"c" times a variable definition structure**<br>
+			
+int: number "d" of triggers<br>
+			
+"d" times a trigger definition structure***<br>
+			<br>
+			
+*Category Definition Structure:<br>
+			
+int: category index<br>
+			
+String: category name<br>
+			
+int: Category type: 0=normal, 1=comment<br>
+			<br>
+			
+**Variable Definition Structure:<br>
+			
+String: variable name<br>
+			
+String: variable type<br>
+			
+int: number "e" ???<br>
+			
+int: array status: 0=not an array, 1=array<br>
+			
+int: array size<br>
+			
+int: initialisation status: 0=not initialized, 1=initialized<br>
+			
+String: initial value (string)<br>
+			<br>
+			
+***Triggers Definiton Structure:<br>
+			
+String: trigger name<br>
+			
+String: trigger description<br>
+			
+int: trigger type: 0=normal, 1=comment<br>
+			
+int: enable state: 0=disabled, 1=enabled<br>
+			
+int: custom text trigger state: 0=not a custom text trigger, 1=custom text 
+trigger (use data in the WCT)<br>
+			
+int: initial state: 0=initially on, 1=not initially on<br>
+			
+int: run on map initialization: 0=no, 1=yes<br>
+			
+int: index of the category the trigger belongs to<br>
+			
+int: number "i" of event-condition-action (ECA) function<br>
+			
+"i" times an ECA function definition structure*(4) (if it's a custom text 
+trigger it should be 0 so we don't have this section)<br>
+			<br>
+			
+*(4)ECA function definition structure<br>
+			
+int: function type: 0=event, 1=condition, 2=action<br>
+			
+String: function name<br>
+			
+int: enable state: 0=function disabled, 1=function enabled<br>
+			
+"x" times a parameter structure*(5). x depends of the function and is hardcoded.<br>
+			
+int: ???<br>
+			
+int: number "i" of event-condition-action (ECA) function<br>
+			
+"i" times an ECA function definition structure*(4)(if this trigger doesn't have 
+multiple actions it should be set to 0 so we don't have this section)<br>
+			<br>
+			
+*(5)Parameters Structure:<br>
+			
+int: type which can be 0=preset, 1=variable, 2=function, 3=string<br>
+			
+String: parameter value<br>
+			
+int: begin function (if it is function it should be set to 1 otherwise to 0)<br>
+			
+���� if begin function is set to 1:<br>
+			
+���� int: type: 3<br>
+			
+���� String: the same as parameter value<br>
+			
+���� int: begin function: 1<br>
+			
+���� "x" times a parameters structure*(5). x depends on the 
+function and is hardcoded.<br>
+			
+int: end function (always set to 0)<br>
+		</p>
+		<p></p>
+		<p><b><u>
+15) "war3map.w3c" The camera
+file</u></b></p>
+		<p>
+Header:<br>
+int: file version = 0<br>
+int: number "n" of camera definition structures<br>
+<br>
+Camera definition structure:<br>
+float: Target X<br>
+float: Target Y<br>
+float: Z Offset<br>
+float: Rotation (angle in degree)<br>
+float: Angle Of Attack (AoA) (angle in degree)<br>
+float: Distance<br>
+float: Roll<br>
+float: Field of View (FoV) (angle in degree)<br>
+float: Far Clipping (FarZ)<br>
+float: ??? (usually set to 100)<br>
+String: Cinematic name<br>
+</p>
+		<p></p>
+		<p><b><u>
+16) "war3map.w3r" The
+triggers regions file</u></b></p>
+<p>
+Header:<br>
+int: version = 5<br>
+int: number "n" of region definition structures*<br>
+<br>
+Data:<br>
+"n" times a region definition structure<br>
+<br>
+*Region Definition Structures:<br>
+float: left (jass coordinates)<br>
+float: right (jass coordinates)<br>
+float: bottom (jass coordinates)<br>
+float: top (jass coordinates)<br>
+String: region name<br>
+int: Region index number (creation number)<br>
+char[4]: weather effect ID (ex.: "RLlr" for "Rain Lordaeron Light
+Rain")<br>
+If all the chars are set to 0, then weather effect is disabled.<br>
+String: ambient sound (a sound ID name defined in the w3s file like
+"gg_snd_HumanGlueScreenLoop1")<br>
+bytes[3]: region color (used by the World Editor) (BB GG RR)<br>
+byte: end of the structure<br>
+</p>
+		<p></p>
+		<p><b><u>
+17) "war3map.w3s" The sounds
+definition file</u></b></p>
+<p>
+Header:<br>
+int: file format version = 1<br>
+int: number "n" of sounds defined<br>
+<br>
+Data:<br>
+"n" times a sound definition structure*<br>
+<br>
+*Sound definition structure:<br>
+String: sound ID name (like "gg_snd_HumanGlueScreenLoop1")<br>
+String: sound file (like "Sound\Ambient\HumanGlueScreenLoop1.wav")<br>
+String: EAX effects (like "DefaultEAXON")<br>
+�� DefaultEAXON=Default<br>
+�� CombatSoundsEAX=combat<br>
+�� KotoDrumsEAX=drums<br>
+�� SpellsEAX=spells<br>
+�� MissilesEAX=missiles<br>
+�� HeroAcksEAX=hero speech<br>
+�� DoodadsEAX=doodads<br>
+int: sound flags<br>
+�� 0x00000001=looping<br>
+�� 0x00000002=3D sound<br>
+�� 0x00000004=stop when out of range<br>
+�� 0x00000008=music<br>
+�� 0x00000010=<br>
+int: fade in rate<br>
+int: fade out rate<br>
+int: volume (-1=use default value)<br>
+float: pitch<br>
+float: ???<br>
+int: ??? (-1 or 8)<br>
+int: channel:<br>
+�� 0=General<br>
+�� 1=Unit Selection<br>
+�� 2=Unit Acknowledgement<br>
+�� 3=Unit Movement<br>
+�� 4=Unit Ready<br>
+�� 5=Combat<br>
+�� 6=Error<br>
+�� 7=Music<br>
+�� 8=User Interface<br>
+�� 9=Looping Movement<br>
+�� 10=Looping Ambient<br>
+�� 11=Animations<br>
+�� 12=Constructions<br>
+�� 13=Birth<br>
+�� 14=Fire<br>
+float: min. distance<br>
+float: max. distance<br>
+float: distance cutoff<br>
+float: ???<br>
+float: ???<br>
+int: ??? (-1 or 127)<br>
+float: ???<br>
+float: ???<br>
+float: ???<br>
+<br>
+Note:<br>
+Floats value can be set or left unset (default value will be used)<br>
+When a float is not set, the value [4F800000]h = 4.2949673e+009 is used.<br>
+</p>
+		<p></p>
+		<p><u><b>
+18) "war3map.wct" The custom
+text trigger file</b></u></p>
+<p>(with the help of BlackDick)<br>
+int: file version (0)<br>
+int: number "n" of triggers<br>
+"n" times a custom text trigger structure*<br>
+Note: Custom text trigger structures are defined using the same order as
+triggers they belong to in the WTG.<br>
+Each trigger must have its custom text part, even if it has not been converted
+to a custom text trigger; in this case, the custom text size is set to 0 (only 4 bytes for the size int).<br>
+<br>
+*Custom Text Trigger Structure:<br>
+int: size "s" of the text (including the null terminating char)<br>
+String: custom text trigger string (contains "s chars including the null
+terminating char)<br>
+</p>
+<p><font color="#800000"><u><b>NEW  Frozen Throne expansion pack format (thanks Ziutek):<br>
+</b></u></font></p>
+		<p>int: file version: 1<br>
+			
+String: custom script code comment<br>
+			
+1 time a custom text trigger structure*<br>
+			
+int: number "n" of triggers<br>
+			
+"n" times a custom text trigger structure*<br>
+			
+Note: Custom text trigger structures are defined using the same order as 
+triggers they belong to in the WTG.<br>
+			
+Each trigger must have its custom text part, even if it has not been converted 
+to a custom text trigger; in this case, the custom text size is set to 0 (only 4 
+bytes for the size int).<br>
+			<br>
+			
+*Custom Text Trigger Structure:<br>
+			
+int: size "s" of the text (including the null terminating char)<br>
+			String: custom text trigger string (contains "s chars including the null terminating char)</p>
+		<p>�</p>
+		<p><u><b>
+19) "war3map.imp" The
+imported file list</b></u></p>
+<p>
+Header:<br>
+int: file format version<br>
+int: number "n" of imported files<br>
+<br>
+Data:<br>
+1byte: tells if the path is complete or needs "war3mapImported\" (5 or 8= 
+standard path, 10 or 13: custom path) (thx PitzerMike)<br>
+String["n"]: the path inside the w3m of each imported file (like
+"war3mapImported\mysound.wav")<br>
+<br>
+			Note: Any file added in the W3M and added in the .imp will NOT be removed by the World Editor each time you save your map.<br>
+This file can also be found in Warcraft campaign files with the name
+war3campaign.imp with the only difference that the standard path for
+imported files is "war3campaignImported\".</p>
+		<p></p>
+		<p><b><u>
+20) "war3map.wai" The Artificial Intelligence file</u></b></p>
+<p>
+<font color="#800000"><u><b>File for the Frozen Throne expansion pack only (thanks to Ziutek)</b></u></font></p>
+<p>
+int: wai file format version: 2<br>
+string: AI name<br>
+int: race: 0=Custom, 1=Human, 2=Orc, 3=Undead, 4=Night Elf<br>
+int: options<br>
+Unless otherwise noted all of the options are contained in HiWord of options 
+integer.<br>
+Check for the presence of options by using a mask with following values:<br>
+<br>
+SetPlayerName: 0x2000<br>
+Melee: 0x0001<br>
+DefendUsers: 0x8000<br>
+RandomPaths: 0x4000<br>
+TargetHeroes: 0x0002<br>
+RepairStructures: 0x0004<br>
+HeroesFlee: 0x0008<br>
+UnitsFlee: 0x0010<br>
+GroupsFlee: 0x0020<br>
+HaveNoMercy: 0x0040<br>
+IgnoreInjured: 0x0080<br>
+RemoveInjuries: 0x1000<br>
+TakeItems: 0x0100<br>
+BuyItems: 0x0001 LoWord<br>
+SlowHarvesting: 0x0200<br>
+AllowHomeChanges: 0x0400<br>
+SmartAltillery: 0x0800<br>
+<br>
+int: number of following workers and buildings. If there are less than 4 workers 
+and buildings specified, WorldEdit will choose default values. Should be: 4.<br>
+char[4]: gold worker<br>
+char[4]: wood worker<br>
+char[4]: base building<br>
+char[4]: mine building (If none, use the same identifer as base building)<br>
+<br>
+int: number "a" of conditions<br>
+int: ???: 7<br>
+"a" times a conditions definition structure*<br>
+char[4]: First Hero Used (if none set these values to null otherwise set it to 
+Unit ID)<br>
+char[4]: Second Hero Used (if none set these values to null otherwise set it to 
+Unit ID)<br>
+char[4]: Third Hero Used (if none set these values to null otherwise set it to 
+Unit ID)<br>
+int: Training Order % Chance(1.FirstHero,2.SecondHero,3.ThirdHero)<br>
+int: Training Order % Chance(1.FirstHero,2.ThirdHero,3.SecondHero)<br>
+int: Training Order % Chance(1.SecondHero,2.FirstHero,3.ThirdHero)<br>
+int: Training Order % Chance(1.SecondHero,2.ThirdHero,3.FirstHero)<br>
+int: Training Order % Chance(1.ThirdHero,2.FirstHero,3.SecondHero)<br>
+int: Training Order % Chance(1.ThirdHero,2.SecondHero,3.FirstHero)<br>
+<br>
+Skill Selection Order:<br>
+char[4*10]: Ten Skill IDs for First Hero(as first hero)<br>
+char[4*10]: Ten Skill IDs for First Hero(as second hero)<br>
+char[4*10]: Ten Skill IDs for First Hero(as third hero)<br>
+char[4*10]: Ten Skill IDs for Second Hero(as first hero)<br>
+char[4*10]: Ten Skill IDs for Second Hero(as second hero)<br>
+char[4*10]: Ten Skill IDs for Second Hero(as third hero)<br>
+char[4*10]: Ten Skill IDs for Third Hero(as first hero)<br>
+char[4*10]: Ten Skill IDs for Third Hero(as second hero)<br>
+char[4*10]: Ten Skill IDs for Third Hero(as third hero)<br>
+int: number "c" of Build Priorities<br>
+"c" times build priorities structure***<br>
+int: number "d" of Harvest Priorities<br>
+"d" times harvest priorities structure *(4)<br>
+int: number "e" of Target Priorities<br>
+"e" times target priorities structure *(5)<br>
+int: repeats waves<br>
+int: minimum forces: attack group index(for First Hero Only set this value to 
+char[4]:HAIA)<br>
+int: initial delay<br>
+int: number "f" of Attack Groups<br>
+"f" times attack groups structure *(6)<br>
+int: number "g" of Attack Waves<br>
+"g" times attack waves structure *(8)<br>
+int: ???: 1<br>
+int: game options<br>
+Unless otherwise noted all of the options are contained in HiWord of options 
+integer.<br>
+Check for the presence of options by using a mask with following values:<br>
+<br>
+Disable Fog Of War: 0x0001<br>
+Disable Victory/Defeat Conditions: 0x0002<br>
+<br>
+int: regular game speed<br>
+string: path to map file<br>
+int: number "h" of Players (0-2)<br>
+"h" times players structure *(9)<br>
+int: ???<br>
+			<br>
+			
+*Condition Definition Structure:<br>
+int: condition index<br>
+String: condition name<br>
+int: number "b": 0=none(empty condition), 1=condition<br>
+if number "b" = 1<br>
+String: operator function name<br>
+int: begin function: 1<br>
+"x" times a Parameters Structure**. x depends on the function and is hardcoded.<br>
+int: end function: 0<br>
+			<br>
+			
+**Parameters Structure:<br>
+int: type: 0=preset, 1=operator function, 2=function, 3=string <br>
+String: parameter value (if it is function and this value is empty, begin 
+function means '(' and end function means ')' )<br>
+int: begin function (if it is function or operator function it should be set to 
+1 otherwise to 0)<br>
+if it is function and parameter value is not empty:<br>
+int: type: 3<br>
+String: the same as parameter value<br>
+int: begin function: 1<br>
+"x" times a Parameters Structure**. x depends on the function and is hardcoded.<br>
+int: end function: 0<br>
+if it is operator function:<br>
+int: begin function: 1<br>
+"x" times a Parameters Structure**. x depends on the function and is hardcoded.<br>
+int: end function<br>
+int: end function: 0<br>
+			<br>
+			
+***Build Priorities Structure:<br>
+int: priorities type: 0<br>
+int: type: 0=unit, 1=upgrade, 2=expansion town<br>
+char[4]: Unit/Upgrade ID(if it is expansion town this value should be set to: 
+XEIA)<br>
+int: town: 0=main, 1-9=Expansion #1-9, 0xFFFFFFFD-0xFFFFFFF5=current mine #1-9, 
+0xFFFFFFFF=any<br>
+int: condition index(if none set this value to 0xFFFFFFFF, if custom set this 
+value to 0xFFFFFFFE)<br>
+1 time condition definition structure*(without condition index!)<br>
+			<br>
+			
+*(4)Harvest Priorities Structure:<br>
+int: priorities type: 1<br>
+int: harvest type: 0=gold, 1=lumber<br>
+int: town: 0=main, 1-9=Expansion #1-9, 0xFFFFFFFD-0xFFFFFFF5=current mine #1-9, 
+0xFFFFFFFF=any<br>
+int: workers: 0-90=fixed value #0-90, 0xFFFFFFFF=all, 0xFFFFFFFE=all not 
+attacking<br>
+int: condition index(if none, set this value to 0xFFFFFFFF, if custom, set this 
+value to 0xFFFFFFFE)<br>
+1 time condition definition structure*(without condition index!)<br>
+			<br>
+			
+*(5)Target Priorities Structure<br>
+int: priorities type: 2<br>
+int: target: 0=common alliance target, 1=new expansion location, 2=enemy major 
+assault,<br>
+3=enemy expansion, 4=enemy any town, 5=creep camp, 6=purchase goblin zeppelin<br>
+int: creep min strength(if target is other than 5 set this value to 0xFFFFFFFF)<br>
+����
+if target = 5<br>
+����
+int: creep max strength<br>
+����
+int: allow flyers: 0=no, 1=yes<br>
+int: condition index(if none, set this value to 0xFFFFFFFF, if custom, set this 
+value to 0xFFFFFFFE)<br>
+1 time condition definition structure*(without condition index!)<br>
+			<br>
+			
+*(6)Attack Groups Structure<br>
+int: attack group index<br>
+string: attack group name<br>
+int: number "g" of Current Group<br>
+"g" times current group structure *(7)<br>
+			<br>
+			*(7)Current Group Structure<br>
+char[4]: Unit ID (FirstHero: 1HIA, SecondHero: 2HIA, ThirdHero: 3HIA)<br>
+int: quantity value: 0-90=quantity #0-90, 0xFFFFFFFF=All<br>
+int: maximum quantity: 0-90=quantity #0-90, 0xFFFFFFFF=All(if quantity value is 
+0xFFFFFFFF, maximum quantity means all except #0-90)<br>
+int: condition index(if none, set this value to 0xFFFFFFFF, if custom, set this 
+value to 0xFFFFFFFE)<br>
+1 time condition definition structure*(without condition index!)<br>
+			<br>
+			
+*(8)Attack Waves Structure<br>
+int: attack group index<br>
+int: delay<br>
+			<br>
+			*(9)Players Structure<br>
+int: player index<br>
+int: team number<br>
+int: race: 1=human, 2=orc, 8=undead, 4=night elf, 20=random<br>
+int: color: 0=red, 1=blue, 2=teal, 3=purple, 4=yellow, 5=orange, 6=green, 7=pink, 
+8=gray,<br>
+9=light blue, 10=dark green, 11=brown<br>
+int: handicap (0-100)<br>
+int: ai: 0=standard, 1=user, 4=custom, 12=current<br>
+int: ai difficulty: 0=easy, 1=normal, 2=insane<br>
+string: path to custom ai script<br>
+		</p>
+		<p></p>
+		<p><b><u> 21) "war3mapMisc.txt, war3mapSkin.txt, war3mapExtra.txt" The Global Settings</u></b></p>
+		<p><font color="#800000"><u><b>File for the Frozen Throne expansion pack only (thanks to PitzerMike)</b></u></font></p>
+		<p>These
+files hold information about global map settings stored in the format
+of ini files. These are plain textfiles where sections are initialized
+by [sectionname] and within each section values are set by a statement
+like valuename=value.<br>
+			The war3mapMisc file contains all the data of the gameplay constants screen..<br>
+			The war3mapSkin file contains all the changes made in the game interface screen.<br>
+The war3mapExtra file contains the changes of the last tab in the map
+properties screen, where external data sources and custom skys are
+referenced.<br>
+		</p>
+		<p></p>
+		<p><b><u>22) W3N File Format (thanks to PitzerMike)</u></b></p>
+		<p>A
+W3N file is a Warcraft III Campaign file. It has the same 512 byte
+header as map files and also has a 260 byte footer for authentification
+purposes. See the W3M specification for details on the header and
+footer. These campaign files are only available in the Forzen Throne
+expansion pack.<br>
+			<br>
+			The MPQ part can contain the following files:<br>
+			(listfile)<br>
+			(signature)<br>
+			(attributes)<br>
+			war3campaign.w3u<br>
+			war3campaign.w3t<br>
+			war3campaign.w3a<br>
+			war3campaign.w3b<br>
+			war3campaign.w3d<br>
+			war3campaign.w3q<br>
+			war3campaign.w3f<br>
+			war3campaign.imp<br>
+			war3campaignImported\*.*<br>
+We'll see now what the war3campaign.w3f file stands for. The other
+files have already been discussed in the W3M specification.<br>
+		</p>
+		<p></p>
+		<p><b><u>23) war3campaign.w3f (The info file for campaigns) (thanks to PitzerMike)</u></b></p>
+		<p>int: file format version (currently 1)<br>
+			int: campaign version (how many times it has been saved)<br>
+			int: saved with editor version<br>
+			String: campaign name<br>
+			String: campaign difficulty<br>
+			String: author name<br>
+			String: campaign description<br>
+			int: variable difficulty levels flag + expansion flag<br>
+			   0=Fixed Diffculty, Only w3m maps<br>
+			   1=Variable Difficulty, Only w3m maps<br>
+			   2=Fixed Difficulty, Contains w3x maps<br>
+			   3=Variable Difficulty, Contains w3x maps<br>
+			int: campaign background screen index (-1 = none or custom path)<br>
+			String: path of custom background screen (empty if none or preset)<br>
+			String: path of minimap picture (empty = none)<br>
+			int: ambient sound index (-1 = imported file, 0 = none, greater 0 = preset index)<br>
+			String: path of custom imported ambient sound mp3<br>
+			int: uses terrain fog (0 = not used, greater 0 = index of terrain fog style dropdown box)<br>
+			float: fog start z height<br>
+			float: fog end z height<br>
+			float: fog density<br>
+			byte: fog red value<br>
+			byte: fog green value<br>
+			byte: fog blue value<br>
+			byte: fog alpha value<br>
+			int: cursor and ui race index (0 = human)<br>
+			int: number "n" of maps in the campaign<br>
+			"n" times a map title structure*<br>
+			int: number "m" of maps in the flow chart (usually equal to "n")<br>
+			"m" times a map order structure*<br>
+		</p>
+		<p>*Map Title Structure:<br>
+			int: is map visible in the campaign screen from the beginning (1 = visible, 0 = invisible)<br>
+			String: chapter title<br>
+			String: map title<br>
+			String: path of the map in the campaign archive<br>
+		</p>
+		<p>**Map Order Structure:<br>
+			String: unknown (always empty, might also be a single character)<br>
+			String: path of the map in the campaign archive<br>
+		</p>
+		<p></p>
+		<p><b><u>24) SLK files (table format for different purposes) (thanks to PitzerMike)</u></b></p>
+		<p>SLK
+files can technically be opened by Microsoft Excel, though if you don't
+own Excel or a SLK editor, or want to open SLK files with your
+application, you might be interested in the format, so here it is. SLK
+files are text files and read line by line. The first two letters of
+each line can be used to decide what to do with it.</p>
+		<p>Format:<br>
+			Line["ID"]: the first line you will have to read is the one starting with ID, this id is usually set to ID;PWXL;N;E<br>
+			Line["B;"]: this line defines the number of columns and lines of the table<br>
+			   Example:�B;Y837;X61;D0 0 836 60<br>This file has 837 lines and 61 
+columns, the rest of the line is always set to ;D0 0 Y-1 X-1 so these 
+are probably the internal index bounds<br>From now on we will only look at lines that start with "C;" and are followed by "Y" or "X".<br>
+Line["C;Y"]: specifies the value for the cell with the specified line
+and column if the fourth token starts with a "K", otherwise we ignore
+it, anyway the current line is set to the y value, so the following
+lines that might be missing the y value refer to this line<br>
+			   Example: C;Y1;X1;K"unitBalanceID"<br>
+			   Sets the cell in line 1 and column 1 to "unitBalanceID"<br>
+Line["C;X"}: specifies the value for the cell with the specified column
+and the line previously specified as current line (in a "C;Y"
+statement) if the fourth token starts with a "K", otherwise we ignore it<br>
+			   Example: C;X45;K1.8<br>
+			   Assigns 1.8 to the cell in current line and column 45<br>
+			The x value might also be omitted, so that the x value of the previous line is used.<br>
+		</p>
+		<p>All other lines can be ignored, they contain comments and format 
+information. After a "K" there may either be a whole or floating point 
+number or a string within quotes. Empty cells don't have any entries. 
+This should be enough information to successfully parse all of 
+Blizzard's SLK files and files edited<br>
+			with Excel or its Open Office equivalent. If you want to read up on the advanced tokens, get the official specs at <a href="http://www.wotsit.org/download.asp?f=sylk">http://www.wotsit.org/download.asp?f=sylk</a></p>
+		<p></p>
+		<p><u><b>25)  BLP files (image format)</b></u></p>
+		<p>Besides TGA files, Warcraft III uses mainly the BLP format for 
+images. The format supports JPG-compression and paletted images. See the
+ "war3mapMap.blp" description for details on the BLP format. The TGA 
+format is wide-spread and known by most graphic tools, anyway the TGA 
+specs can be found at <a href="http://www.wotsit.org/download.asp?f=tga" target="_blank">http://www.wotsit.org/download.asp?f=tga</a></p>
+		<p></p>
+		<p><u><b>26) MDX and MDL files (model format)</b></u></p>
+		<p>The Warcraft III models are stored in MDX format.<br>
+			
+			To convert an MDX file into readable MDL format and vice versa you can use Yobgul's file converter, which is available at <a href="http://www.wc3sear.ch/files/downloads.php?ID=3&amp;l=6">http://www.wc3sear.ch/files/downloads.php?ID=3&amp;l=6<br>
+			</a>If Yobgul's does't work for you there's an alternative programmed by Guessed available at<a href="http://www.wc3campaigns.net/tools/weu/MDXReader1.00b.zip"> http://www.wc3campaigns.net/tools/weu/MDXReader1.00b.zip<br>
+			</a>There are several spec files on both formats available:<br>
+			<br>
+			<a href="http://kmkdesign.8m.com/downloads/">http://kmkdesign.8m.com/downloads/</a> - Original specifications by KMK<br>
+			<a href="http://www.wc3campaigns.net/tools/specs/NubMdxFormat.txt">http://www.wc3campaigns.net/tools/specs/NubMdxFormat.txt</a> - More recent version by Nub<br>
+			<a href="http://magos.thejefffiles.com/War3ModelEditor/">http://magos.thejefffiles.com/War3ModelEditor/</a> - Latest specifications by Magos</p>
+		<p></p>
+		<p><b><u>27) Packed Files - W3V, W3Z, W3G (gamecache, savegame, replay files) (thanks to PitzerMike)</u></b></p>
+		<p>These files are packed using zlib compression. They have a common compressed format.<br>
+			But after unpacking the files, each type has its own file format. The packed format is as follows:<br>
+			<br>
+			*Packed File Header<br>
+			<br>
+			char[28] signature: always "Warcraft III recorded game\0x1A\0"<br>
+			uint header size: 0x40 for versions up to 1.06, 0x44 for later versions<br>
+			uint compressed file size: including header<br>
+			uint header version: 0x00 up to version 1.06, 0x01 for later versions<br>
+			uint compressed size: size of the original decompressed file<br>
+			uint "n": nr of compressed data blocks in the file<br>
+			if (header version == 0) {<br>
+			   ushort unknown: always 0<br>
+			   ushort version number: the part behind the decimal point<br>
+			} else {<br>
+			   char[4] version identifier: "WAR3" for classic, "W3XP" for expansion<br>
+			   uint version number: the part behind the decimal point<br>
+			}<br>
+			ushort build number: that is a unique id for each Warcraft III build<br>
+			ushort flags: 0x0000 for single player, 0x8000 for multiplayer<br>
+			uint length: in milli seconds for replays, 0x00000000 otherwise<br>
+			uint checksum: CRC32 of the whole header until now, with this int set to 0<br>
+			now there are "n" compressed blocks<br>
+			<br>
+			*Compressed Data Block<br>
+			<br>
+			ushort "m": compressed size of the block<br>
+			ushort original size: size of the original uncomprssed input data,<br>
+			       must be multiple of 2048, rest is filled with 0x00 bytes<br>
+			uint hash: checksum over the block header and the block data,<br>
+			       the formula how this is computed won't be released to the public,<br>
+			       however reasonable requests might be answered<br>
+			<br>
+			Now there are "m" bytes zlib compressed data, which can be decompressed/compressed with a zlib library.<br>
+			Depending on the zlib implementation you might have to compute the zlib header by yourself. That would be:<br>
+			<br>
+			byte[2] zlib header: can be skipped when reading, set to 0x78 and 0x01 when writing<br>
+			byte[m - 2] deflate stream, use deflate stream implementation to decompress/compress<br>
+			<br>
+			After uncompressing all blocks and appending them to each other, you have the original uncompressed file.<br>
+			Depending on the type of file, the replay, gamecache or savegame file specifications will now apply.</p>
+		<p></p>
+		<p><b><u>28) Campaigns.w3v (gamecache file) (thanks to PitzerMike)</u></b></p>
+		<p>This file is found once for each profile in the save directory of Warcraft III and contains stores variables and units<br>
+			carried from one map to another in campaigns. Campaigns.w3v files are also embedded in savegame files where they<br>
+			represent the in-memory state of the gamecaches at the time when the savegame was made. Here's the format:</p>
+		<p>*Campaigns.w3v header:<br>
+			int: reserved for version (currently nr of gamecaches)<br>
+			int: nr "n" of gamecaches<br>
+			"n" gamecache structures<br>
+		</p>
+		<p>*Gamecache structure:<br>
+			string: gamecache name<br>
+			int: reserved (currently nr of categories)<br>
+			int: nr "m" of categories<br>
+			"m" category structures<br>
+		</p>
+		<p>*Category structure:<br>
+			string: category name<br>
+			int[5]: reserved for additional variable types<br>
+			int: nr "i" integers<br>
+			"i" integer structures<br>
+			int: nr "r" reals<br>
+			"r" real structures<br>
+			int: nr "b" booleans<br>
+			"b" boolean structures<br>
+			int: nr "u" units<br>
+			"u" unit structures<br>
+			int: nr "s" strings<br>
+			"s" string structures<br>
+		</p>
+		<p>*Integer/Real/Boolean structure:<br>
+			string: label name<br>
+			byte[4]: four bytes for the value</p>
+		<p><br>
+			*String structure:<br>
+			string: label name<br>
+			string: value<br>
+		</p>
+		<p>*Unit structure:<br>
+			string: lable name<br>
+			int: unit id<br>
+			int: nr "j" inventory slots<br>
+			"j" inventory slot structures<br>
+			int: experience<br>
+			int: level<br>
+			int: unused skill points<br>
+			int[9]: unknown<br>
+			int: nr "k" hero skills<br>
+			"k" hero skill structures<br>
+			int[2]: unknown<br>
+			float: unknown<br>
+			int[4]: unknown<br>
+			short: unknown<br>
+		</p>
+		<p>*Inventory slot structure (everything 0 if slot is empty):<br>
+			int: item id<br>
+			int: nr charges<br>
+			int: unknown</p>
+		<p>*Hero skill structure (everything 0 if not learned yet):<br>
+			int: ability id<br>
+			int: current level</p>
+		<p></p>
+		<p><b><u>29) W3Z files&nbsp;(savegames)</u></b></p>
+		<p>There's not much to say about savegame files. Noone ever tried to track the format of Warcraft&nbsp;III savegames down<br>
+			because theyi are huge and the format is pretty complicated. The only information available here can be used to extract<br>
+			embedded gamecache data.<br>
+			To find the embedded gamecache data you simply have to search for the string token Campaigns.w3v in the savegame.<br>
+			After this token you will find a full Campaigns.w3v file as described in the above section. I never tried to reinject<br>
+			edited gamecaches into a savegame, but I'm pretty sure there's a hash or checksum that would prevent it from working.</p>
+		<p></p>
+		<p><b><u>30) W3G files (replays) (thanks to Blue, Nagger and Kliegs)</u></b></p>
+		<p>The replay format has been tracked down by people at ShadowFlare's realm. You can find very good and<br>
+			detailed documentation on the format at <a href="http://w3g.deepnode.de/">http://w3g.deepnode.de/</a></p>
+		<p></p>
+		<p><b><u>31) The others files</u></b></p>
+		<p><i>
+war3mapImported\*.*</i>
+= files imported by the world editor or by the user using the import
+manager (these should be listed in the imp file, otherwise they will be
+deleted when the map is saved), you can now use any path you like and
+are not limited to war3mapImported\ any more, this way you can override
+files in the Warcraft mpq archives by placing files with the same name
+in your map<br>
+			(signature), (listfile) and (attributes) are rather extensions to the
+ MPQ format than actual map files but they can also be found in map 
+archives<br>
+<i>
+(signature)</i> = signature of the w3m file, used only by Blizzard (has 
+been replaced by a stronger signature appended at the end of map 
+archives)<br>
+<i>
+(listfile)</i> = list of files stored in the w3m file, used by MPQ
+editors to resolve the names of the files stored in the archive, this
+is needed because stored files are one-way-hashed<br>
+<i>
+(attributes)</i> = attributes of files in the w3m file, it is
+checked when a map is loaded in the World Editor, if you have modified
+a file of a map and didn't update the (attributes) file properly it
+will say that the map is corrupted, the easy way to prevent this is
+deleting the file from the archive, the harder way is updating it, the
+format of the file is as follows:<br>
+		</p>
+		<p>int: unknown1: set to 0x64000000<br>
+			int: unknown2: set to 0x03000000<br>"n" times a CRC32, "n" is the number of used slots (=files) in the MPQ archive<br>
+So for each file we have the CRC32 (cycling redundancy check) value
+here, wich is a sort of checksum, you can find functions that calculate
+the CRC32 of a file on the web<br>
+			"n" times a Filetime, "n" is the number of used slots (=files) in the MPQ archive<br>
+The Filetime specifies for each file when it was added to the archive.
+It consists of two ints (low and high date/time). These two integers
+include information about the year, month, day, hour, minute and second
+when each file has been added, these 2 values represent a WinAPI file
+time structure and can be converted to the WinAPI system time type by
+using the SystemTimeToFileTime and FileTimeToSystemTime functions in
+kernel32.dllint: <br>
+			
+			int: low date time<br>
+			<br>
+		</p>
+		<p>The
+order of the CRC32 and Filetimes is the same as the order of the files
+in the archive. Logically this means that the information of the last
+CRC32 and Filetime is the information about the (attributes) file,
+because it has to be added to the archive after all other files. This
+also means that the CRC32 of the last file is always 0, because you
+cannot calculate the CRC32 of a file that will be changed later, which
+would make the CRC invalid again.<br>
+		</p>
+		<p></p>
+		<p><b><u>Format Specification Backups:</u></b></p>
+		<p>Here are local copies of all the external format specifications that I have linked to  in this file. Please always check out<br>
+			the external sites first, because there might be more up-to-date 
+information. But just in case any of the link ever gets broken,<br>
+			here are local copies.</p>
+		<p><a href="http://www.wc3c.net/tools/specs/QuantamMPQFormat.txt">QuantamMPQFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/KMKMdxFormat.txt">KMKMdxFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/MagosMdxFormat.txt">MagosMdxFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/NubMdxFormat.txt">NubMdxFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/MagosBlpFormat.txt">MagosBlpFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/W3GFormat.txt">W3GFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/W3GActions.txt">W3GActions.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/SLKFormat.txt">SLKFormat.txt</a><br>
+			<a href="http://www.wc3c.net/tools/specs/TGAFormat.txt">TGAFormat.txt</a></p>
+		<p></p>
+		<p><b><u>Credits:</u></b></p>
+		<p>Thanks
+to Justin Olbrantz (Quantam) for Inside MoPaQ, Andrey Lelikov for LMPQ
+API and ShadowFlare, they created the tools to allow me to get "inside"
+w3m (mpq) files.<br>
+Special thanks to BlackDick,  DJBnJack, PitzerMike, StonedStoopid,  Ziutek and a few
+others who helped me to find some stuff and work on this documentation.<br>
+			Thanks to WC3Campaign Staff and War3Pub Staff who hosted my stuff and let me meet interesting people.<br>
+			
+Thanks to Blizzard Entertainment for making Warcraft III<br>
+<br>
+   -=Z�pir oo<br>
+</p>
+	</body></html>
