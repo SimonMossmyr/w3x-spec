@@ -60,7 +60,7 @@ The DOO file consists of
 | `int` | Y? (w3e coordinates) |
 
 ### Tree header and data
-The tree header and data is identical to normal doodads, including File ID `W3do`, but all Tree IDs are `BTtw`.
+The tree header and data is identical to normal doodads, including File ID `W3do`, but all Doodad IDs appear to be the same.
 
 
 ## Doodad Flags
