@@ -1,12 +1,21 @@
  # war3map.doo (The doodad file for trees)
 
-The file contains the trees definitions and positions.
+The file contains the doodad definitions and positions.
 
 ## File format
 
-The DOO file consists of a 16 byte header, followed by doodad data of usually 50 bytes (size can vary), followed by a special doodads header and special doodads data of 16 bytes each. The special doodads can't be edited once they are placed.
+The DOO file consists of 
 
-### Header
+ 1. A 16 byte doodad header,
+ 2. Doodad data of usually 50 bytes (size can vary) for each doodad,
+ 3. A special doodads header,
+ 4. Special doodads data of 16 bytes each,
+ 5. A 16 byte tree header, and
+ 6. Tree data of usually 50 bytes (size can vary) for each tree.
+ 
+ The special doodads can't be edited once they are placed.
+
+### Doodad header
 
 | Size | Description | Default value |
 |-----|-----|------|
@@ -15,7 +24,7 @@ The DOO file consists of a 16 byte header, followed by doodad data of usually 50
 | `int` | subversion? | `[0B 00 00 00]h` |
 | `int` | number of trees defined ||
 
-### Data
+### Doodad data
 
 | Size | Description |
 |-----|-----|
@@ -49,6 +58,9 @@ The DOO file consists of a 16 byte header, followed by doodad data of usually 50
 | `int` | Z? (0) |
 | `int` | X? (w3e coordinates) |
 | `int` | Y? (w3e coordinates) |
+
+### Tree header and data
+The tree header and data is identical to normal doodads, including File ID `W3do`, but all Tree IDs are `BTtw`.
 
 
 ## Doodad Flags
