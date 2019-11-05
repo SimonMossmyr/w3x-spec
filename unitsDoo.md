@@ -126,6 +126,8 @@ After random item/unit flag block we have:
 
 ### Footer
 
+| Size | Description |
+|------|------------|
 | `int` | unknown/unused (0) |
 
 ## Flags
