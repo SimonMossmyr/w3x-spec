@@ -34,11 +34,9 @@ Each tilepoint is defined by a block of 7 bytes. The number of blocks is equal t
 |----|---------|
 | `short` | ground height <br> `C000h`: minimum height (-16384) <br> `2000h`: normal height (ground level 0) <br> `3FFFh`: maximum height (+16383) |
 | `short` | water level + map edge boundary flag\* (see notes) |
-| `nibble` | flags\* (see notes) |
-| `nibble` | ground texture type (grass, dirt, rocks,...) |
+| `byte` | flags\* and ground texture type (grass, dirt, rocks,...) |
 | `byte` | ground and cliff texture variation |
-| `nibble` | cliff texture type |
-| `nibble` | layer height |
+| `byte` | cliff texture type and layer height |
 
 ## Further details
 ### Tilesets
@@ -76,7 +74,9 @@ where:
 - /2 because we don't want the length but the middle.
 - -1\* because we're "translating" the center of the map, not giving it's new coordinates
 
-### Flags
+### Flags and ground texture type
+Flags are high 4 bits and ground texture type is low 4 bits.
+
 Flags values (shown as big endian):
 
 | Value | Description |
