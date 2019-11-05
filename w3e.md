@@ -34,11 +34,11 @@ Each tilepoint is defined by a block of 7 bytes. The number of blocks is equal t
 |----|---------|
 | `short` | ground height <br> `C000h`: minimum height (-16384) <br> `2000h`: normal height (ground level 0) <br> `3FFFh`: maximum height (+16383) |
 | `short` | water level + map edge boundary flag\* (see notes) |
-| `4bit` | flags\* (see notes) |
-| `4bit` | ground texture type (grass, dirt, rocks,...) |
-| `byte` | texture details (of the tile of which the tilepoint is the bottom left corner) (rocks, holes, bones,...). <br> It appears that only a part of this byte is used for details. It needs more investigations. |
-| `4bit` | cliff texture type |
-| `4bit` | layer height |
+| `nibble` | flags\* (see notes) |
+| `nibble` | ground texture type (grass, dirt, rocks,...) |
+| `byte` | ground and cliff texture variation |
+| `nibble` | cliff texture type |
+| `nibble` | layer height |
 
 ## Further details
 ### Tilesets
@@ -89,6 +89,9 @@ Flags values (shown as big endian):
 
 ### Water level
 Water level is stored just like ground height. The highest bit (bit 15) is used for the boundary flag 1.
+
+### Ground and cliff texture variation
+The highest 5 bits of this byte is ground texture variation, and the lowest 3 bits are cliff variation. They can be extracted with `c & 0xF8` and `c & 0x7` respectively.
 
 ## Tilepoint data example
 Example: `51 21 00 62 56 84 13`
