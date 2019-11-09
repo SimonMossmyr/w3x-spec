@@ -1,5 +1,7 @@
 # The trigger names file
 
+[More information](https://www.hiveworkshop.com/threads/warcraft-3-trigger-format-specification-wtg.294491/) 
+
 ## File format
 ### Header
 | Size | Description |
@@ -61,18 +63,18 @@
 ### Parameters
 | Size | Description |
 |------|----------|
-| `int` | type which can be 0=preset, 1=variable, 2=function, 3=string |
+| `int` | type which can be 0=preset, 1=variable, 2=function, 3=string, -1=invalid |
 | `String` | parameter value |
-| `int` | begin function flag |
+| `int` | has sub parameters flag |
 
-If begin function is set to 1:
+If has sub parameters flag is set to 1:
 
 | Size | Description |
 |------|----------|
 | `int` | type: 3 |
 | `String` | the same as parameter value |
 | `int` | begin function: 1 |
-| `parameters[NPARAM]` | NPARAM times a parameters structure. NPARAM depends on the function and can be calculated from UI\\TriggerData.txt. [More information](https://www.hiveworkshop.com/threads/warcraft-3-trigger-format-specification-wtg.294491/) |
+| `parameters[NPARAM]` | NPARAM times a parameters structure. NPARAM depends on the function name and can be calculated from UI\\TriggerData.txt. |
 
 Always followed by:
 
