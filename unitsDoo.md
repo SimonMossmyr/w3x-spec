@@ -26,10 +26,9 @@ Each unit/item is defined by a block of bytes (variable length) organized like t
 | `float` | scale X |
 | `float` | scale Y |
 | `float` | scale Z |
-| `byte` | flags |
+| `byte` | unknown (maybe flags?) |
 | `int` | player number (owner) |
-| `byte` | unknown (0) |
-| `byte` | unknown (0) |
+| `short` | unknown |
 | `int` | hit points (-1 = use default) |
 | `int` | mana points (-1 = use default, 0 = unit doesn't have mana) |
 | `int` | map item table pointer (for dropped items on death) <br> if -1 => no item table used <br> if >= 0 => the item table with this number will be dropped on death |
@@ -53,8 +52,8 @@ Then more data:
 | Size | Description |
 |------|------------|
 | `int` | gold amount (default = 12500) |
-| `float` | target acquisition (-1 = normal, -2 = camp) |
-| `int` | hero level (set to1 for non hero units and items) |
+| `float` | target acquisition range (-1 = normal (500), -2 = camp (200)) |
+| `int` | hero level (set to 1 for non hero units and items) |
 | `int` | strength of the hero (0 = use default) |
 | `int` | agility of the hero (0 = use default) |
 | `int` | intelligence of the hero (0 = use default) |
