@@ -19,3 +19,4 @@
 | `char[4]` | weather effect ID (ex.: "RLlr" for "Rain Lordaeron Light Rain") If all the chars are set to 0, then weather effect is disabled. |
 | `String` | ambient sound (a sound ID name defined in the w3s file like "gg_snd_HumanGlueScreenLoop1") |
 | `byte[4]` | region color (used by the World Editor) (BB GG RR AA, alpha unused) |
+| `byte` | unknown |
