@@ -1,83 +1,106 @@
-# The trigger names file
+# The trigger names file (war3map.wtg)
 
-[More information](https://www.hiveworkshop.com/threads/warcraft-3-trigger-format-specification-wtg.294491/) 
+This file defines the "trigger objects" in the Trigger Editor environment in the World Editor.
 
 ## File format
-### Header
 | Size | Description |
 |------|----------|
 | `char[4]` | file ID (WTG!) |
 | `int` | wtg file format version = 7 |
 | `int` | number "NCD" of triggers categories |
-| `category[NCD]` | "NCD" times a category definition structure |
+| `category[NCD]` | "NCD" times a trigger category structure |
 | `int` | unknown |
-| `int` | number "NVD" of variables |
-| `variable[NVD]` | "NVD" times a variable definition structure |
+| `int` | number "NVARS" of variables |
+| `variable[NVARS]` | "NVARS" times a variable structure |
 | `int` | number "NTRG" of triggers |
-| `trigger[NTRG]` | NTRG times a trigger definition structure |
+| `trigger[NTRG]` | NTRG times a trigger structure |
 
 ### Category
 | Size | Description |
 |------|----------|
-| `int` | category index |
+| `int` | category index/ID |
 | `String` | category name |
-| `int` | Category type: 0=normal, 1=comment |
+| `bool` | Is a comment |
 
 ### Variable
 | Size | Description |
 |------|----------|
-| `String` | variable name |
-| `String` | variable type |
-| `int` | number "e" ??? |
-| `int` | array status: 0=not an array, 1=array |
+| `string` | variable name |
+| `string` | variable type |
+| `int` | unknown |
+| `bool` | is an array |
 | `int` | array size |
-| `int` | initialisation status: 0=not initialized, 1=initialized |
-| `String` | initial value (string) |
+| `bool` | is initialized |
+| `string` | initial value |
 
 ### Trigger
 | Size | Description |
 |------|----------|
-| `String` | trigger name |
-| `String` | trigger description |
-| `int` | trigger type: 0=normal, 1=comment |
-| `int` | enable state: 0=disabled, 1=enabled |
-| `int` | custom text trigger state: 0=not a custom text trigger, 1=custom text trigger (use data in the WCT) |
-| `int` | initial state: 0=initially on, 1=not initially on |
-| `int` | run on map initialization: 0=no, 1=yes |
-| `int` | index of the category the trigger belongs to |
-| `int` | number "NECA" of event-condition-action (ECA) function |
-| `ECA[NECA]` | NECA times an ECA function  |
+| `string` | name |
+| `string` | description |
+| `bool` | is comment |
+| `bool` | is enabled |
+| `bool` | use custom trigger text defined in war3map.wct |
+| `bool` | is initially off |
+| `bool` | run on map initialization |
+| `int` | trigger category id |
+| `int` | number "NECA" of ECA function |
+| `ECA[NECA]` | NECA times an ECA function |
 
 
-### ECA function
+### Event-Condition-Action (ECA) function
 | Size | Description |
 |------|----------|
-| `int` | function type: 0=event, 1=condition, 2=action |
-| `String` | function name |
-| `int` | enabled flag: 0=function disabled, 1=function enabled |
-| `parameters[NPARAM]` | NPARAM times a parameters structure. NPARAM depends on the function and is hardcoded. |
-| `int` | ??? |
-| `int` | number "NECA" of event-condition-action (ECA) function |
-| `ECA[NECA]` | NECA times an ECA function definition structure (if this trigger doesn't have multiple actions it should be set to 0 so we don't have this section) |
+| `int` | type: 0=event, 1=condition, 2=action |
+| `int` | Only exists if this is a child-ECA. Group for if/then/else (0 = condition, 1 = then-action, 2 = else-action).  |
+| `string` | function name "NAME" |
+| `bool` | is enabled |
+| `parameters[NPARAM]` | NPARAM times the parameter structure. NPARAM depends on "NAME" and is hardcoded. |
+| `int` | number "NCHILD" of child-ECA functions |
+| `ECA[NECA]` | NCHILD times the ECA function structure |
 
-### Parameters
+### Parameter
 | Size | Description |
 |------|----------|
-| `int` | type which can be 0=preset, 1=variable, 2=function, 3=string, -1=invalid |
-| `String` | parameter value |
-| `int` | has sub parameters flag |
+| `int` | Parameter type. 0=preset, 1=variable, 2=function, 3=string, -1=invalid |
+| `string` | parameter value |
+| `bool` | has subparameters |
 
-If has sub parameters flag is set to 1:
+If has sub parameters:
 
 | Size | Description |
 |------|----------|
 | `int` | type: 3 |
-| `String` | the same as parameter value |
-| `int` | begin function: 1 |
-| `parameters[NPARAM]` | NPARAM times a parameters structure. NPARAM depends on the function name and can be calculated from UI\\TriggerData.txt. |
+| `string` | Parameter name "NAME". The same as parameter value |
+| `int` | begin parameters: 1 |
+| `parameters[NPARAM]` | NPARAM times the parameters structure. NPARAM depends on "NAME". |
 
 Always followed by:
 
 | Size | Description |
 |------|----------|
-| `int` | end function (always set to 0) |
+| `bool` | is array |
+| `parameter` | array index parameter |
+
+## Number of parameters in an ECA or sub parameter (NPARAM)
+
+To find the number of parameters an ECA uses, look in [TriggerData.txt](https://github.com/SimonMossmyr/w3x-spec/blob/master/TriggerDataTxt.md) under the sections
+
+  - \[TriggerEvents\],
+  - \[TriggerConditions\],
+  - \[TriggerActions\],
+  - \[TriggerCalls\].
+
+Count the number of "argument types", but exclude all types that are equal to "0", "1", "nothing", or "" (empty).
+
+For example, the line
+```
+OperatorCompareBoolean=0,boolean,EqualNotEqualOperator,boolean
+```
+in TriggerData.txt tells us that the ECA with name "OperatorCompareBoolean" has three parameters (boolean, EqualNotEqualOperator, and boolean).
+
+The line
+```
+BlzIsTargetIndicatorEnabled=0,1,boolean
+```
+tells us that the ECA function with name "BlzIsTargetIndicatorEnabled" *doesn't have any parameters*: this ECA is defined under \[TriggerCalls\], where the argument types start after the third value ("boolean"). 
